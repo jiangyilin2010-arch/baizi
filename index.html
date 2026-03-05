@@ -1,0 +1,1423 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>白子*恐怖：夜巡与速写</title>
+  <style>
+    :root {
+      --bg-1: #07161f;
+      --bg-2: #132f3d;
+      --panel: rgba(7, 20, 28, 0.86);
+      --line: rgba(143, 210, 223, 0.28);
+      --text: #edf7fb;
+      --muted: #a8bfca;
+      --accent: #8de6ea;
+      --accent-strong: #cbfbff;
+      --reply: #ffd0d0;
+      --shadow: 0 24px 80px rgba(0, 0, 0, 0.45);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: "Hiragino Sans GB", "PingFang SC", "Noto Sans SC", sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(circle at top right, rgba(67, 166, 185, 0.22), transparent 34%),
+        radial-gradient(circle at 15% 20%, rgba(112, 200, 208, 0.12), transparent 28%),
+        linear-gradient(140deg, var(--bg-1), var(--bg-2) 52%, #060a0e);
+      overflow-x: hidden;
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      background:
+        linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+      background-size: 38px 38px;
+      mask-image: linear-gradient(to bottom, rgba(0, 0, 0, 0.95), transparent 85%);
+      z-index: 0;
+    }
+
+    .shell {
+      position: relative;
+      z-index: 1;
+      width: min(1220px, calc(100% - 28px));
+      margin: 14px auto 22px;
+      padding: 14px;
+      border: 1px solid var(--line);
+      border-radius: 24px;
+      background: rgba(3, 10, 15, 0.55);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(14px);
+    }
+
+    .header {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 8px 8px 14px;
+      align-items: center;
+    }
+
+    .eyebrow {
+      margin: 0 0 6px;
+      font-size: 12px;
+      letter-spacing: 0.24em;
+      color: var(--muted);
+      text-transform: uppercase;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: clamp(24px, 4vw, 42px);
+      line-height: 1.1;
+    }
+
+    .subhead {
+      margin: 8px 0 0;
+      max-width: 620px;
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.65;
+    }
+
+    .stats {
+      min-width: 220px;
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 12px;
+      background: rgba(8, 20, 28, 0.58);
+    }
+
+    .stats p {
+      margin: 0 0 10px;
+      font-size: 12px;
+      letter-spacing: 0.08em;
+      color: var(--muted);
+    }
+
+    .meter {
+      margin-bottom: 9px;
+    }
+
+    .meter:last-child {
+      margin-bottom: 0;
+    }
+
+    .meter-label {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 5px;
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    .meter-track {
+      width: 100%;
+      height: 8px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.08);
+      overflow: hidden;
+    }
+
+    .meter-fill {
+      height: 100%;
+      border-radius: inherit;
+      background: linear-gradient(90deg, rgba(141, 230, 234, 0.22), var(--accent));
+      transition: width 0.28s ease;
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: minmax(360px, 39%) minmax(0, 1fr);
+      gap: 14px;
+      align-items: start;
+    }
+
+    .visual {
+      position: sticky;
+      top: 10px;
+      min-height: 760px;
+      border: 1px solid var(--line);
+      border-radius: 20px;
+      overflow: hidden;
+      background:
+        radial-gradient(circle at 62% 14%, rgba(141, 230, 234, 0.2), transparent 23%),
+        radial-gradient(circle at 22% 72%, rgba(141, 230, 234, 0.12), transparent 24%),
+        linear-gradient(180deg, rgba(11, 23, 31, 0.92), rgba(4, 10, 16, 0.98));
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+      padding: 14px 14px 12px;
+    }
+
+    .halo {
+      width: 120px;
+      height: 120px;
+      margin-left: auto;
+      border-radius: 50%;
+      border: 2px solid rgba(141, 230, 234, 0.45);
+      box-shadow:
+        0 0 0 12px rgba(141, 230, 234, 0.08),
+        0 0 58px rgba(141, 230, 234, 0.18);
+      flex-shrink: 0;
+      animation: haloShift 4.8s ease-in-out infinite;
+    }
+
+    @keyframes haloShift {
+      0%, 100% { transform: scale(0.98); opacity: 0.84; }
+      50% { transform: scale(1.03); opacity: 1; }
+    }
+
+    .portrait-wrap {
+      position: relative;
+      height: 560px;
+      margin-top: 4px;
+    }
+
+    .portrait {
+      position: absolute;
+      top: 10px;
+      left: 50%;
+      width: min(100%, 470px);
+      max-height: 540px;
+      object-fit: contain;
+      filter: drop-shadow(0 18px 40px rgba(0, 0, 0, 0.45));
+      opacity: 0;
+      transform: translateX(-50%) translateY(16px) scale(0.98);
+      transition: opacity 0.36s ease, transform 0.36s ease;
+      pointer-events: none;
+      user-select: none;
+    }
+
+    .portrait.active {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0) scale(1);
+    }
+
+    .visual-caption {
+      margin-top: auto;
+      border: 1px solid rgba(141, 230, 234, 0.16);
+      border-radius: 14px;
+      background: rgba(4, 12, 18, 0.62);
+      padding: 10px 12px;
+      color: var(--muted);
+      font-size: 12px;
+      display: flex;
+      justify-content: space-between;
+      gap: 8px;
+    }
+
+    .panel {
+      min-height: 760px;
+      border: 1px solid var(--line);
+      border-radius: 20px;
+      background: linear-gradient(180deg, rgba(10, 21, 30, 0.9), rgba(5, 13, 19, 0.95));
+      padding: 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .scene-meta {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .scene-tag,
+    .scene-count {
+      font-size: 12px;
+      color: var(--muted);
+      padding: 7px 11px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.03);
+      letter-spacing: 0.08em;
+    }
+
+    .speaker {
+      margin: 2px 0 0;
+      color: var(--accent-strong);
+      font-size: 13px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+    }
+
+    .scene-title {
+      margin: 0;
+      font-size: clamp(22px, 3vw, 32px);
+      line-height: 1.16;
+    }
+
+    .dialogue {
+      flex: 1;
+      min-height: 410px;
+      max-height: 470px;
+      overflow-y: auto;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 16px;
+      background: rgba(255, 255, 255, 0.02);
+      padding: 12px;
+      display: grid;
+      align-content: start;
+      gap: 12px;
+      scroll-behavior: smooth;
+    }
+
+    .dialogue::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    .dialogue::-webkit-scrollbar-thumb {
+      border-radius: 999px;
+      background: rgba(141, 230, 234, 0.32);
+    }
+
+    .scene-block {
+      border: 1px solid rgba(141, 230, 234, 0.16);
+      border-radius: 14px;
+      padding: 10px;
+      background: rgba(255, 255, 255, 0.02);
+    }
+
+    .block-head {
+      margin: 0 0 8px;
+      display: flex;
+      justify-content: space-between;
+      gap: 8px;
+      color: var(--muted);
+      font-size: 12px;
+      letter-spacing: 0.06em;
+    }
+
+    .line {
+      margin: 0 0 8px;
+      padding: 10px 12px;
+      border-left: 2px solid rgba(141, 230, 234, 0.36);
+      border-radius: 10px;
+      background: rgba(255, 255, 255, 0.03);
+      line-height: 1.72;
+      font-size: 15px;
+      white-space: pre-wrap;
+    }
+
+    .line:last-child {
+      margin-bottom: 0;
+    }
+
+    .line.reply {
+      border-left-color: rgba(255, 176, 176, 0.55);
+      background: rgba(255, 176, 176, 0.08);
+      color: #ffe9e9;
+    }
+
+    .kw-core {
+      color: #9ff2f7;
+      font-weight: 600;
+    }
+
+    .kw-warm {
+      color: #ffd191;
+      font-weight: 600;
+    }
+
+    .kw-alert {
+      color: #ffb8b8;
+      font-weight: 600;
+    }
+
+    .choices {
+      display: grid;
+      gap: 10px;
+    }
+
+    .choice,
+    .action {
+      width: 100%;
+      border: 1px solid rgba(141, 230, 234, 0.22);
+      border-radius: 14px;
+      background:
+        linear-gradient(120deg, rgba(141, 230, 234, 0.1), rgba(141, 230, 234, 0.03)),
+        rgba(255, 255, 255, 0.02);
+      color: var(--text);
+      padding: 12px 14px;
+      text-align: left;
+      font: inherit;
+      cursor: pointer;
+      transition: transform 0.16s ease, border-color 0.16s ease;
+    }
+
+    .choice:hover,
+    .action:hover {
+      transform: translateY(-1px);
+      border-color: rgba(141, 230, 234, 0.42);
+    }
+
+    .choice strong,
+    .action strong {
+      display: block;
+      margin-bottom: 4px;
+      color: var(--accent-strong);
+      font-size: 15px;
+    }
+
+    .choice span,
+    .action span {
+      display: block;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.55;
+    }
+
+    .choice.selected {
+      border-color: rgba(141, 230, 234, 0.58);
+      background:
+        linear-gradient(120deg, rgba(141, 230, 234, 0.2), rgba(141, 230, 234, 0.06)),
+        rgba(255, 255, 255, 0.03);
+    }
+
+    .choice:disabled {
+      opacity: 0.72;
+      cursor: default;
+    }
+
+    .footer {
+      margin-top: 2px;
+      display: flex;
+      gap: 10px;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .hint {
+      font-size: 12px;
+      line-height: 1.62;
+      color: var(--muted);
+    }
+
+    .hint kbd {
+      border: 1px solid rgba(141, 230, 234, 0.35);
+      border-bottom-width: 2px;
+      border-radius: 6px;
+      padding: 1px 5px;
+      font-size: 11px;
+      color: var(--accent-strong);
+      background: rgba(8, 20, 28, 0.7);
+      font-family: "SFMono-Regular", ui-monospace, Menlo, monospace;
+    }
+
+    .action {
+      max-width: 220px;
+      text-align: center;
+    }
+
+    .action[disabled] {
+      opacity: 0.48;
+      transform: none;
+      cursor: not-allowed;
+    }
+
+    .ending-card {
+      border: 1px solid rgba(141, 230, 234, 0.24);
+      border-radius: 16px;
+      padding: 12px;
+      background:
+        radial-gradient(circle at top right, rgba(141, 230, 234, 0.12), transparent 28%),
+        rgba(255, 255, 255, 0.02);
+    }
+
+    .ending-card h3 {
+      margin: 0 0 8px;
+      font-size: 22px;
+    }
+
+    .ending-card p {
+      margin: 0 0 8px;
+      line-height: 1.72;
+      color: var(--muted);
+      font-size: 15px;
+    }
+
+    .ending-card .quote {
+      color: var(--accent-strong);
+    }
+
+    .ending-image {
+      width: min(100%, 420px);
+      border-radius: 12px;
+      border: 1px solid rgba(141, 230, 234, 0.2);
+      margin: 8px 0 10px;
+      display: block;
+    }
+
+    .credit {
+      margin-top: 10px;
+      padding-top: 10px;
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+      font-size: 12px;
+      color: var(--muted);
+      line-height: 1.6;
+    }
+
+    @media (max-width: 1024px) {
+      .layout {
+        grid-template-columns: 1fr;
+      }
+
+      .visual {
+        position: static;
+        min-height: 520px;
+      }
+
+      .portrait-wrap {
+        height: 390px;
+      }
+
+      .portrait {
+        max-height: 375px;
+      }
+
+      .panel {
+        min-height: 640px;
+      }
+
+      .dialogue {
+        max-height: 380px;
+      }
+    }
+
+    @media (max-width: 640px) {
+      .shell {
+        width: min(100% - 12px, 100%);
+        margin-top: 6px;
+        padding: 10px;
+      }
+
+      .header,
+      .footer {
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      .stats,
+      .action {
+        max-width: none;
+      }
+
+      .dialogue {
+        min-height: 320px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="shell">
+    <section class="header">
+      <div>
+        <p class="eyebrow">Text Love Game / 约十分钟</p>
+        <h1>白子*恐怖：夜巡与护送行动</h1>
+        <p class="subhead">
+          10幕互动文字恋爱剧情：在阿拜多斯夜巡、办公室、健身房和节日街区中，通过选择推进关系并触发专属结局。
+          每一幕单独展示，打字机播放时按 <kbd>空格</kbd> 可立即显示当前段落全文。
+        </p>
+      </div>
+      <aside class="stats">
+        <p>同步记录</p>
+        <div class="meter">
+          <div class="meter-label">
+            <span>信赖</span>
+            <span id="trustValue">0</span>
+          </div>
+          <div class="meter-track"><div class="meter-fill" id="trustBar"></div></div>
+        </div>
+        <div class="meter">
+          <div class="meter-label">
+            <span>安定</span>
+            <span id="calmValue">0</span>
+          </div>
+          <div class="meter-track"><div class="meter-fill" id="calmBar"></div></div>
+        </div>
+      </aside>
+    </section>
+
+    <section class="layout">
+      <aside class="visual">
+        <div class="halo"></div>
+        <div class="portrait-wrap">
+          <img id="portraitFull" class="portrait active" src="白子*恐怖立绘.jpg" alt="白子*恐怖立绘">
+          <img id="portraitChibi" class="portrait" src="白子*恐怖Q版立绘.jpg" alt="白子*恐怖Q版立绘">
+          <img id="portraitSideCalm" class="portrait" src="立绘侧脸忧郁.jpg" alt="白子*恐怖侧脸立绘">
+          <img id="portraitSideKiller" class="portrait" src="立绘侧脸杀意.jpg" alt="白子*恐怖侧脸杀意立绘">
+          <img id="portraitEyesClosed" class="portrait" src="正脸立绘闭眼.jpeg" alt="白子*恐怖正脸闭眼立绘">
+        </div>
+        <div class="visual-caption">
+          <span id="moodLabel">状态：观测中</span>
+          <span id="routeLabel">路线：阿拜多斯夜巡线</span>
+        </div>
+      </aside>
+
+      <section class="panel">
+        <div class="scene-meta">
+          <span class="scene-tag" id="sceneTag">序章</span>
+          <span class="scene-count" id="sceneCount">1 / 10</span>
+        </div>
+        <div class="speaker" id="speaker">白子*恐怖</div>
+        <h2 class="scene-title" id="sceneTitle">站台会合</h2>
+
+        <div class="dialogue" id="dialogueLog"></div>
+        <div class="choices" id="choices"></div>
+
+        <div class="footer">
+          <div class="hint" id="hint">打字机播放中可按 <kbd>空格</kbd> 显示本段全文。选项会决定普通结局和特定选项结局。</div>
+          <button class="action" id="nextButton" type="button" disabled>
+            <strong>继续</strong>
+            <span>先完成这一幕</span>
+          </button>
+        </div>
+      </section>
+    </section>
+  </main>
+
+  <script>
+    const scenes = [
+      {
+        id: "intro",
+        tag: "序章",
+        title: "站台会合",
+        speaker: "白子*恐怖",
+        mood: "路线校准",
+        route: "废线地铁口",
+        portrait: "full",
+        lines: [
+          "嗯，老师到了。和我预测时间误差四分钟，属于优秀区间。",
+          "白子把一根巧克力递到你手里：“先补糖，再走长线。今晚路程会久一点。”",
+          "她看了看路牌，又看了看你手里的记事本，语气平稳：“老师这次没有迷路，只是故意绕路观察。很好。”",
+          "“夜巡开始前，请老师给一个行动主题。”"
+        ],
+        choices: [
+          {
+            label: "主题：稳态并排",
+            detail: "速度可以变，但两人的位置不变。",
+            effects: { trust: 2, calm: 2 },
+            reply: "收到。默认并排，除非老师主动要求切换。"
+          },
+          {
+            label: "主题：少说话，多同步",
+            detail: "不需要高频交流，但要持续对齐。",
+            effects: { trust: 1, calm: 3 },
+            reply: "可执行。沉默模式下，我会更频繁回头确认老师。"
+          },
+          {
+            label: "主题：严肃里保留一点轻松",
+            detail: "气氛不沉底，但也不失真。",
+            effects: { trust: 2, calm: 1 },
+            reply: "嗯，这个比例合理。"
+          }
+        ]
+      },
+      {
+        id: "office",
+        tag: "第一幕",
+        title: "老师办公室",
+        speaker: "白子*恐怖",
+        mood: "静态观测",
+        route: "夏莱·老师办公室",
+        portrait: "eyesClosed",
+        lines: [
+          "你们先到老师办公室。她站在白板前，认真看完今天的安排，再把“例会”旁边补了一行：‘先确认老师有进食。’",
+          "桌上空着一个相框，像一个还没写完的句号。",
+          "“这里缺的不是武器库。”她轻轻放下笔，“是能让老师停下来恢复状态的区域。”",
+          "她把笔递给你：“老师决定配置，我来落地。”"
+        ],
+        choices: [
+          {
+            label: "设立“战术零食补给站”",
+            detail: "用最小成本，保证长线作战状态。",
+            effects: { trust: 2, calm: 2 },
+            unlock: "officeSnacks",
+            reply: "方案通过。我会做库存表，避免断供。"
+          },
+          {
+            label: "把相框先留空，等一起填进去",
+            detail: "先不急着定义，把未来留在墙上。",
+            effects: { trust: 3, calm: 0 },
+            reply: "嗯。延期执行，不等于取消执行。"
+          },
+          {
+            label: "制定‘不失联’工作规则",
+            detail: "把关心写成制度，降低意外概率。",
+            effects: { trust: 1, calm: 3 },
+            reply: "规则已记录。老师若违规，我会提醒。"
+          }
+        ]
+      },
+      {
+        id: "gym",
+        tag: "第二幕",
+        title: "健身房热身",
+        speaker: "白子*恐怖",
+        mood: "动力上升",
+        route: "白子自建健身房",
+        portrait: "full",
+        lines: [
+          "她带你去她整理出来的一层健身房。器械不豪华，但每一件都维护得很好。",
+          "“这是高优先级区域。”白子说，“体能稳定，判断会更稳。”",
+          "她把计时器递给你，语气依旧平静：“老师不用硬撑。我们做配速训练，不做无意义冲刺。”",
+          "“先热身，再夜巡。”"
+        ],
+        choices: [
+          {
+            label: "和她做双人节奏训练",
+            detail: "你跟她同拍，不比极限，只比持续。",
+            effects: { trust: 2, calm: 2 },
+            reply: "节奏一致。嗯，老师适应得很快。"
+          },
+          {
+            label: "请她给你定长期体能计划",
+            detail: "你把这件事当成长线合作。",
+            effects: { trust: 3, calm: 1 },
+            reply: "收到。计划会按老师工作强度动态调整。"
+          },
+          {
+            label: "提议把冷却拉伸加入固定流程",
+            detail: "不只追求输出，也确保恢复。",
+            effects: { trust: 1, calm: 3 },
+            reply: "同意。恢复环节常被忽略，但很关键。"
+          }
+        ]
+      },
+      {
+        id: "valentine",
+        tag: "第三幕",
+        title: "情人节缓存",
+        speaker: "白子*恐怖",
+        mood: "轻微偏移",
+        route: "旧商店街",
+        portrait: "chibi",
+        lines: [
+          "旧商店街还留着情人节装饰。风一吹，纸心轻轻晃。",
+          "白子拿出一整块巧克力，包装和过去那块几乎相同。",
+          "“像缓存重现。”她说，“每次到这一天，它都会回来。”",
+          "她看着你：“老师，这算重复，还是确认。”"
+        ],
+        choices: [
+          {
+            label: "算确认：同样的礼物，不同的当下",
+            detail: "过去会回响，但不必重演。",
+            effects: { trust: 2, calm: 1 },
+            reply: "嗯，这个定义我接受。"
+          },
+          {
+            label: "算稳定：不需要每次都改版",
+            detail: "保留能让人安心的固定项。",
+            effects: { trust: 1, calm: 2 },
+            reply: "稳定版本，长期维护。"
+          },
+          {
+            label: "算双人密钥：必须一人一半",
+            detail: "把礼物改写成同步协议。",
+            effects: { trust: 3, calm: 0 },
+            reply: "密钥已分发。老师请保持在线。"
+          }
+        ]
+      },
+      {
+        id: "spring",
+        tag: "第四幕",
+        title: "春节街区",
+        speaker: "白子*恐怖",
+        mood: "节日试运行",
+        route: "阿拜多斯旧街灯区",
+        portrait: "sideCalm",
+        lines: [
+          "灯笼把街区照得温和了一点。她侧脸上的冷色也被拉暖。",
+          "白子拎起一条红绳看了几秒，像在评估是否影响骑行动作。",
+          "“老师，节日感和执行力可以并存吗。”她问。",
+          "你们站在灯下，等一个可实施的答案。"
+        ],
+        choices: [
+          {
+            label: "命名“福字机动组”并保留执勤流程",
+            detail: "先礼后兵，语气温和，动作不慢。",
+            effects: { trust: 2, calm: 1 },
+            unlock: "lanternPatrol",
+            reply: "命名通过。执行口令已更新。"
+          },
+          {
+            label: "把福字贴在头套内侧，只作为私密标记",
+            detail: "对外保持克制，对内保留温度。",
+            effects: { trust: 3, calm: 0 },
+            reply: "……我会保留这个版本。"
+          },
+          {
+            label: "今天只巡逻，不追击",
+            detail: "把节日夜定义为低风险维护日。",
+            effects: { trust: 1, calm: 3 },
+            reply: "收到。今晚优先‘稳定’，不是‘压制’。"
+          }
+        ]
+      },
+      {
+        id: "bank",
+        tag: "第五幕",
+        title: "银行外场演练",
+        speaker: "白子*恐怖",
+        mood: "高专注",
+        route: "黑市银行外街",
+        portrait: "sideKiller",
+        lines: [
+          "她带你停在银行外街的转角，拿出头套，又很快收回去。",
+          "“先声明，不是真的抢银行。”她语气平稳，“今天是‘反抢劫应对演练’。”",
+          "她在地上画出三条撤离线和两条掩护线，动作利落得像上课示范。",
+          "“老师来选演练目标：速度、隐蔽，还是沟通。”"
+        ],
+        choices: [
+          {
+            label: "演练“零损伤撤离”",
+            detail: "目标是无人受伤、无财产损失、流程完整。",
+            effects: { trust: 2, calm: 2 },
+            unlock: "bankRehearsal",
+            reply: "收到。我们做最干净的版本。"
+          },
+          {
+            label: "演练“先沟通后制止”",
+            detail: "优先口头劝停，保留武力阈值。",
+            effects: { trust: 1, calm: 3 },
+            reply: "可执行。先语言压制，再行动控制。"
+          },
+          {
+            label: "演练“十五秒态势判断”",
+            detail: "你负责判断，她负责执行。",
+            effects: { trust: 3, calm: 1 },
+            reply: "分工明确。老师做判断，我做收束。"
+          }
+        ]
+      },
+      {
+        id: "store",
+        tag: "第六幕",
+        title: "便利店短停",
+        speaker: "白子*恐怖",
+        mood: "短暂放松",
+        route: "二十四小时便利店",
+        portrait: "chibi",
+        lines: [
+          "你们在便利店短停。她先确认出口，再去拿补给。",
+          "白子把牛奶、热饮和能量棒按顺序放进篮子里，像在整理行军包。",
+          "结账时她盯着收银台旁边的狼耳贴纸看了两秒，语气一本正经：“这个……有伪装价值。”",
+          "她又补了一句：“可爱伪装，也算伪装。”"
+        ],
+        choices: [
+          {
+            label: "把贴纸买下，贴在她工具箱",
+            detail: "在硬质装备上留一个柔软标记。",
+            effects: { trust: 2, calm: 1 },
+            unlock: "stickerArchive",
+            reply: "收到。外观更新后，识别度会更高。"
+          },
+          {
+            label: "把热饮设为夜巡固定项",
+            detail: "降低夜间疲劳，延长稳定区间。",
+            effects: { trust: 1, calm: 3 },
+            reply: "同意。体温管理会提高判断精度。"
+          },
+          {
+            label: "请她教你三步补给法",
+            detail: "把她的经验变成共享技能。",
+            effects: { trust: 2, calm: 2 },
+            reply: "步骤是：先用途，再时长，最后偏好。老师记住了。"
+          }
+        ]
+      },
+      {
+        id: "ramen",
+        tag: "第七幕",
+        title: "拉面中场",
+        speaker: "白子*恐怖",
+        mood: "轻度松弛",
+        route: "深夜拉面店",
+        portrait: "sideCalm",
+        lines: [
+          "夜巡过半，你们在一家深夜拉面店坐下。她点了标准份，你点了加量。",
+          "吃到一半，她抬眼看你，语气很平：“老师，过去我和另一个白子挑战过特大碗。结果两个人都吃成了球。”",
+          "她顿了顿：“今天不复现事故。我们以可持续为目标。”",
+          "你听见她的补充：“但如果老师想挑战，我会负责回收。”"
+        ],
+        choices: [
+          {
+            label: "正常吃完，保留夜巡后半程状态",
+            detail: "不做极限挑战，执行长期主义。",
+            effects: { trust: 1, calm: 3 },
+            reply: "正确。稳定输出比爆发更重要。"
+          },
+          {
+            label: "挑战加量，但设立“吃成球即停”阈值",
+            detail: "保留20%冒险，同时严格止损。",
+            effects: { trust: 2, calm: 1 },
+            unlock: "ramenSphere",
+            reply: "阈值规则成立。今晚我们只到临界，不越线。"
+          },
+          {
+            label: "把加量分成两人份，共同完成",
+            detail: "让挑战变成协作任务。",
+            effects: { trust: 3, calm: 1 },
+            reply: "合作模式通过。老师的分配很有效率。"
+          }
+        ]
+      },
+      {
+        id: "painting",
+        tag: "第八幕",
+        title: "临时画室",
+        speaker: "白子*恐怖",
+        mood: "收束",
+        route: "空教室",
+        portrait: "eyesClosed",
+        lines: [
+          "空教室里留着画架和旧颜料。她把窗帘拉开一点，让光线落在画布中央。",
+          "白子把画笔递给你，动作很慢：“老师定主题，我负责执行。”",
+          "她看了一眼你办公室里的空相框，声音更轻：“如果作品完成，我会认真保存。”",
+          "教室很安静，只剩笔尖摩擦画布的声音。"
+        ],
+        choices: [
+          {
+            label: "和白子一起画画",
+            detail: "不求完美构图，只求共同完成。",
+            effects: { trust: 3, calm: 1 },
+            unlock: "framedPainting",
+            reply: "嗯。共同作业，归档等级会很高。"
+          },
+          {
+            label: "画一张夜巡路线图",
+            detail: "把今晚的并排行动可视化。",
+            effects: { trust: 2, calm: 2 },
+            reply: "可复现方案。下次可以按图执行。"
+          },
+          {
+            label: "只写一句：并排就好",
+            detail: "用最少字数表达核心结论。",
+            effects: { trust: 2, calm: 1 },
+            reply: "简短，但准确。我会记住。"
+          }
+        ]
+      },
+      {
+        id: "final",
+        tag: "终幕",
+        title: "最后确认",
+        speaker: "白子*恐怖",
+        mood: "参数锁定",
+        route: "阿拜多斯校门",
+        portrait: "sideKiller",
+        lines: [
+          "回到校门前，她没有立刻道别，只是安静看着你。",
+          "“老师，今晚我一直在确认一件事：我能不能在你身边保持稳定频率。”",
+          "她的语气很轻，却很清楚：“如果以后我想冲太快，老师希望自己是刹车、路标，还是并行引擎。”",
+          "“嗯，请给最终指令。”"
+        ],
+        choices: [
+          {
+            label: "我做路标，你做速度",
+            detail: "方向和动能分离，互相补足。",
+            effects: { trust: 2, calm: 2 },
+            reply: "路标+速度，职责清晰。我会按这个模式长期执行。"
+          },
+          {
+            label: "我做并行引擎，不让你独转",
+            detail: "并肩承担，不让她单人超负荷。",
+            effects: { trust: 3, calm: 1 },
+            reply: "……收到。以后我会把老师算进默认参数。"
+          },
+          {
+            label: "我做刹车，只在失控阈值介入",
+            detail: "保留她的锋利，同时防止自损。",
+            effects: { trust: 1, calm: 3 },
+            reply: "精准阈值。我会信任这个机制。"
+          }
+        ]
+      }
+    ];
+
+    const normalEndings = {
+      highTrust: {
+        title: "结局：并行引擎",
+        mood: "高同步",
+        route: "双人夜骑",
+        portrait: "full",
+        lines: [
+          "白子把头套折好放进你手里，像把一份权限正式移交。",
+          "“从今天起，老师在我的默认队列里。”她轻轻点头，“不是临时同行，是固定并行。”",
+          "你们沿着夜路并排往前，速度稳定，呼吸也稳定。"
+        ],
+        quote: "“嗯，老师在旁边，路线会更准。”"
+      },
+      highCalm: {
+        title: "结局：稳态回路",
+        mood: "安定优先",
+        route: "办公室-夜巡双流程",
+        portrait: "eyesClosed",
+        lines: [
+          "你们把整晚的节奏写成可复用流程：先办公室确认状态，再夜巡，再并排回程。",
+          "白子把规则抄在白板边角，字迹很整齐，像把混乱彻底归档。",
+          "她仍然锋利，但每次出发前都会先问一句：“老师，今天走稳态还是高速。”"
+        ],
+        quote: "“老师让我慢一点，不是让我停下，是让我更完整。”"
+      },
+      balanced: {
+        title: "结局：继续同路",
+        mood: "谨慎亲近",
+        route: "下次邀约",
+        portrait: "sideCalm",
+        lines: [
+          "她没有做夸张承诺，只是把今晚每一幕认真记住。",
+          "“嗯，还要继续观察。”她看着你，“但老师已经是我会主动靠近的人。”",
+          "临走前她把最后一块巧克力塞进你掌心，像发下一次任务邀请。"
+        ],
+        quote: "“下次也一起走吧，老师。”"
+      }
+    };
+
+    const specialEndings = {
+      framedPainting: {
+        title: "结局：被精心裱装的画",
+        mood: "专属收藏",
+        route: "老师办公室内墙",
+        portrait: "eyesClosed",
+        illustration: "赠予白子的画.JPG",
+        lines: [
+          "那天画完后，白子把画纸卷起来带走，只说了一句“我会处理保存”。",
+          "三天后你回到办公室，空相框里已经换上你们共同完成的画，被裱得非常认真。",
+          "相框右下角多了一行很小的字：‘与老师共同作业。归档等级：最高。’",
+          "白子靠在门边，语气平静：“嗯，这样老师每天都能看见我留下的证据。”"
+        ],
+        quote: "“我确认过，这幅画不会丢。”"
+      },
+      officeSnacks: {
+        title: "结局：办公室零食防线",
+        mood: "补给满格",
+        route: "战术补给点",
+        portrait: "chibi",
+        lines: [
+          "办公室被你们改造成补给站，抽屉按照糖分和用途分层。",
+          "白子写了《高压工作应急投喂条例》：老师连续工作三小时，强制补给。",
+          "后来大家默认一件事：老师办公室最安全，因为白子会定时来巡检，也定时来看你。"
+        ],
+        quote: "“先补给，再战斗。流程无可挑剔。”"
+      },
+      lanternPatrol: {
+        title: "结局：福字机动组",
+        mood: "节日执勤",
+        route: "阿拜多斯拜年线",
+        portrait: "sideKiller",
+        lines: [
+          "她真的把春联贴在车前梁，车尾挂上会响的福字牌。",
+          "第一次出勤时，坏人以为是节庆车队，下一秒就被精准制服。",
+          "你在后面负责喊“新年快乐”，她在前面负责“请配合调查”。效率意外地高。"
+        ],
+        quote: "“节日感和执行力，不冲突。”"
+      },
+      bankRehearsal: {
+        title: "结局：银行零损伤演练",
+        mood: "高精度控制",
+        route: "黑市银行外街",
+        portrait: "sideKiller",
+        lines: [
+          "那次外场演练最终零损伤收尾，流程完整，没有任何财产损失。",
+          "白子把你的判断节点全部记录下来，做成了新的应急手册。",
+          "她在最后一页写下备注：‘不是真的抢银行。是和老师一起把最坏情况先演练掉。’"
+        ],
+        quote: "“先把风险练熟，真正出事时就不会慌。”"
+      },
+      stickerArchive: {
+        title: "结局：工具箱贴纸档案",
+        mood: "隐秘可爱",
+        route: "维修仓角落",
+        portrait: "sideCalm",
+        lines: [
+          "那张狼耳贴纸最终被贴在她工具箱右上角，位置精准得像战术标记。",
+          "白子后来又陆续收了几张，按日期贴成一条小小的时间线。",
+          "她从不主动展示，但每次开箱前都会先看一眼，然后再开始工作。"
+        ],
+        quote: "“嗯，这是老师参与过的证据链。”"
+      },
+      ramenSphere: {
+        title: "结局：拉面临界值",
+        mood: "20%冒险",
+        route: "深夜拉面店",
+        portrait: "chibi",
+        lines: [
+          "你们真的挑战了加量，但严格执行“吃成球即停”阈值。",
+          "白子在你快放弃时把剩余部分分流到自己碗里，像处理高压任务那样冷静。",
+          "最终两人都只到“临界球形”，没有越线。她难得笑了一下：“嗯，这次控制得很好。”"
+        ],
+        quote: "“拉面可以冒险，但不许失控。”"
+      }
+    };
+
+    const portraitMap = {
+      full: "portraitFull",
+      chibi: "portraitChibi",
+      sideCalm: "portraitSideCalm",
+      sideKiller: "portraitSideKiller",
+      eyesClosed: "portraitEyesClosed"
+    };
+
+    const meterCaps = scenes.reduce(
+      (caps, scene) => {
+        caps.trust += Math.max(...scene.choices.map((choice) => choice.effects.trust));
+        caps.calm += Math.max(...scene.choices.map((choice) => choice.effects.calm));
+        return caps;
+      },
+      { trust: 0, calm: 0 }
+    );
+
+    const state = {
+      index: 0,
+      trust: 0,
+      calm: 0,
+      selectedChoice: null,
+      specialPath: null,
+      typing: false,
+      skipSegment: false,
+      typeToken: 0,
+      sceneLinesWrap: null,
+      replyNode: null,
+      finished: false
+    };
+
+    const sceneTag = document.getElementById("sceneTag");
+    const sceneCount = document.getElementById("sceneCount");
+    const speaker = document.getElementById("speaker");
+    const sceneTitle = document.getElementById("sceneTitle");
+    const dialogueLog = document.getElementById("dialogueLog");
+    const choices = document.getElementById("choices");
+    const nextButton = document.getElementById("nextButton");
+    const hint = document.getElementById("hint");
+    const trustBar = document.getElementById("trustBar");
+    const calmBar = document.getElementById("calmBar");
+    const trustValue = document.getElementById("trustValue");
+    const calmValue = document.getElementById("calmValue");
+    const moodLabel = document.getElementById("moodLabel");
+    const routeLabel = document.getElementById("routeLabel");
+
+    function setPortrait(mode) {
+      const activeId = portraitMap[mode] || portraitMap.full;
+      Object.values(portraitMap).forEach((id) => {
+        const node = document.getElementById(id);
+        node.classList.toggle("active", id === activeId);
+      });
+    }
+
+    function updateMeters() {
+      const trustPercent = Math.min(100, Math.round((state.trust / meterCaps.trust) * 100));
+      const calmPercent = Math.min(100, Math.round((state.calm / meterCaps.calm) * 100));
+      trustBar.style.width = `${trustPercent}%`;
+      calmBar.style.width = `${calmPercent}%`;
+      trustValue.textContent = state.trust;
+      calmValue.textContent = state.calm;
+    }
+
+    function sleep(ms) {
+      return new Promise((resolve) => setTimeout(resolve, ms));
+    }
+
+    function charDelay(char) {
+      if ("，。！？；：".includes(char)) return 62;
+      if (char === " ") return 12;
+      return 26;
+    }
+
+    function scrollToBottom() {
+      dialogueLog.scrollTop = dialogueLog.scrollHeight;
+    }
+
+    const keywordStyles = [
+      { word: "阿拜多斯", className: "kw-core" },
+      { word: "老师", className: "kw-core" },
+      { word: "行动", className: "kw-warm" },
+      { word: "健身房", className: "kw-warm" },
+      { word: "抢银行", className: "kw-alert" },
+      { word: "拉面", className: "kw-warm" }
+    ];
+
+    function escapeHtml(text) {
+      return text
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;");
+    }
+
+    function escapeRegExp(text) {
+      return text.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+    }
+
+    function highlightKeywords(node) {
+      const base = node.textContent;
+      let html = escapeHtml(base);
+      keywordStyles.forEach((item) => {
+        const regex = new RegExp(escapeRegExp(item.word), "g");
+        html = html.replace(regex, `<span class="${item.className}">${item.word}</span>`);
+      });
+      node.innerHTML = html;
+    }
+
+    async function typeText(target, text, token) {
+      if (state.skipSegment) {
+        target.textContent = text;
+        highlightKeywords(target);
+        return;
+      }
+
+      for (let i = 0; i < text.length; i += 1) {
+        if (token !== state.typeToken) return;
+        if (state.skipSegment) {
+          target.textContent = text;
+          break;
+        }
+        target.textContent += text[i];
+        scrollToBottom();
+        await sleep(charDelay(text[i]));
+      }
+      highlightKeywords(target);
+      scrollToBottom();
+    }
+
+    function createSceneBlock(scene) {
+      dialogueLog.innerHTML = "";
+      const block = document.createElement("article");
+      block.className = "scene-block";
+
+      const head = document.createElement("p");
+      head.className = "block-head";
+      head.innerHTML = `<span>${scene.tag} · ${scene.title}</span><span>${scene.route}</span>`;
+      block.appendChild(head);
+
+      const linesWrap = document.createElement("div");
+      block.appendChild(linesWrap);
+      dialogueLog.appendChild(block);
+      state.sceneLinesWrap = linesWrap;
+      state.replyNode = null;
+      scrollToBottom();
+    }
+
+    async function renderScene() {
+      const scene = scenes[state.index];
+      state.selectedChoice = null;
+      state.finished = false;
+      state.skipSegment = false;
+      state.typing = true;
+      ++state.typeToken;
+      const token = state.typeToken;
+
+      sceneTag.textContent = scene.tag;
+      sceneCount.textContent = `${state.index + 1} / ${scenes.length}`;
+      speaker.textContent = scene.speaker;
+      sceneTitle.textContent = scene.title;
+      moodLabel.textContent = `状态：${scene.mood}`;
+      routeLabel.textContent = `路线：${scene.route}`;
+      setPortrait(scene.portrait);
+
+      choices.innerHTML = "";
+      nextButton.disabled = true;
+      nextButton.innerHTML = "<strong>继续</strong><span>先选择回应</span>";
+      hint.innerHTML = '打字机播放中可按 <kbd>空格</kbd> 显示当前段落全文。';
+
+      createSceneBlock(scene);
+
+      for (const lineText of scene.lines) {
+        if (token !== state.typeToken) return;
+        const p = document.createElement("p");
+        p.className = "line";
+        state.sceneLinesWrap.appendChild(p);
+        await typeText(p, lineText, token);
+      }
+
+      if (token !== state.typeToken) return;
+      state.typing = false;
+      state.skipSegment = false;
+      renderChoices(scene);
+    }
+
+    function renderChoices(scene) {
+      choices.innerHTML = "";
+      scene.choices.forEach((choice, index) => {
+        const button = document.createElement("button");
+        button.type = "button";
+        button.className = "choice";
+        button.innerHTML = `<strong>${choice.label}</strong><span>${choice.detail}</span>`;
+        button.addEventListener("click", () => selectChoice(index));
+        choices.appendChild(button);
+      });
+      hint.innerHTML = '可反复切换选项，点击“继续”时才会锁定并结算。';
+    }
+
+    async function previewReply(replyText) {
+      if (!state.sceneLinesWrap) return;
+
+      if (!state.replyNode) {
+        state.replyNode = document.createElement("p");
+        state.replyNode.className = "line reply";
+        state.sceneLinesWrap.appendChild(state.replyNode);
+      }
+      state.replyNode.textContent = "";
+      scrollToBottom();
+
+      state.skipSegment = false;
+      state.typing = true;
+      ++state.typeToken;
+      const token = state.typeToken;
+      await typeText(state.replyNode, replyText, token);
+      if (token !== state.typeToken) return;
+      state.typing = false;
+      state.skipSegment = false;
+      scrollToBottom();
+    }
+
+    async function selectChoice(choiceIndex) {
+      if (state.finished) return;
+      if (state.typing) {
+        if (!state.replyNode) return;
+        ++state.typeToken;
+        state.typing = false;
+        state.skipSegment = false;
+      }
+      const scene = scenes[state.index];
+      const choice = scene.choices[choiceIndex];
+      state.selectedChoice = choiceIndex;
+
+      [...choices.children].forEach((button, index) => {
+        button.classList.toggle("selected", index === choiceIndex);
+      });
+
+      nextButton.disabled = true;
+      hint.innerHTML = `预览回应：信赖 +${choice.effects.trust} / 安定 +${choice.effects.calm}（点继续后生效）`;
+      await previewReply(choice.reply);
+      nextButton.disabled = false;
+      nextButton.innerHTML = "<strong>继续</strong><span>锁定当前选项</span>";
+    }
+
+    function resolveEnding() {
+      if (state.specialPath && specialEndings[state.specialPath]) {
+        return specialEndings[state.specialPath];
+      }
+
+      const trustThreshold = Math.ceil(meterCaps.trust * 0.62);
+      const calmThreshold = Math.ceil(meterCaps.calm * 0.62);
+
+      if (state.trust >= trustThreshold && state.trust >= state.calm + 2) {
+        return normalEndings.highTrust;
+      }
+      if (state.calm >= calmThreshold && state.calm >= state.trust) {
+        return normalEndings.highCalm;
+      }
+      return normalEndings.balanced;
+    }
+
+    function renderEnding() {
+      const ending = resolveEnding();
+      state.finished = true;
+      state.typing = false;
+      state.skipSegment = false;
+      ++state.typeToken;
+
+      sceneTag.textContent = "结局";
+      sceneCount.textContent = "已完成";
+      speaker.textContent = "记录完成";
+      sceneTitle.textContent = ending.title;
+      moodLabel.textContent = `状态：${ending.mood}`;
+      routeLabel.textContent = `路线：${ending.route}`;
+      setPortrait(ending.portrait);
+
+      dialogueLog.innerHTML = `
+        <article class="scene-block">
+          <div class="ending-card">
+            <h3>${ending.title}</h3>
+            ${ending.illustration ? `<img class="ending-image" src="${ending.illustration}" alt="${ending.title}插图">` : ""}
+            ${ending.lines.map((line) => `<p>${line}</p>`).join("")}
+            <p class="quote">${ending.quote}</p>
+            <div class="credit">
+              使用了当前文件夹内全部立绘资源，并加入了老师办公室、便利店、节日段落、
+              打字机空格跳过、选项可改选直到继续锁定、以及多个特定选项结局。
+            </div>
+          </div>
+        </article>
+      `;
+      scrollToBottom();
+
+      choices.innerHTML = "";
+      hint.innerHTML = "结局达成。点击右侧按钮可重开。";
+      nextButton.disabled = false;
+      nextButton.innerHTML = "<strong>重新开始</strong><span>回到第一幕</span>";
+    }
+
+    async function applyChoiceAndAdvance() {
+      if (state.finished || state.typing) return;
+      if (state.selectedChoice === null) return;
+
+      const scene = scenes[state.index];
+      const choice = scene.choices[state.selectedChoice];
+      state.trust += choice.effects.trust;
+      state.calm += choice.effects.calm;
+      updateMeters();
+
+      if (choice.unlock) {
+        state.specialPath = choice.unlock;
+      }
+
+      state.index += 1;
+      if (state.index >= scenes.length) {
+        renderEnding();
+        return;
+      }
+      await renderScene();
+    }
+
+    function resetGame() {
+      state.index = 0;
+      state.trust = 0;
+      state.calm = 0;
+      state.selectedChoice = null;
+      state.specialPath = null;
+      state.typing = false;
+      state.skipSegment = false;
+      state.finished = false;
+      state.replyNode = null;
+      state.sceneLinesWrap = null;
+      ++state.typeToken;
+      updateMeters();
+      renderScene();
+    }
+
+    nextButton.addEventListener("click", async () => {
+      if (state.finished) {
+        resetGame();
+        return;
+      }
+      await applyChoiceAndAdvance();
+    });
+
+    document.addEventListener("keydown", (event) => {
+      if (event.code !== "Space") return;
+      const activeTag = document.activeElement ? document.activeElement.tagName : "";
+      if (activeTag === "INPUT" || activeTag === "TEXTAREA") return;
+      if (state.typing) {
+        event.preventDefault();
+        state.skipSegment = true;
+      }
+    });
+
+    updateMeters();
+    renderScene();
+  </script>
+</body>
+</html>
