@@ -34,6 +34,36 @@
       overflow-x: hidden;
     }
 
+    body.modal-open {
+      overflow: hidden;
+    }
+
+    body[data-theme="light"] {
+      --bg-1: #dceff5;
+      --bg-2: #c6e6ef;
+      --panel: rgba(238, 250, 255, 0.88);
+      --line: rgba(60, 147, 170, 0.28);
+      --text: #103341;
+      --muted: #4d6e7c;
+      --accent: #53b5c8;
+      --accent-strong: #1f7f95;
+      --reply: #b86c86;
+      --shadow: 0 24px 80px rgba(15, 68, 87, 0.2);
+    }
+
+    body[data-theme="pink"] {
+      --bg-1: #ffe7f1;
+      --bg-2: #ffd6ec;
+      --panel: rgba(255, 240, 248, 0.9);
+      --line: rgba(187, 117, 162, 0.34);
+      --text: #51263f;
+      --muted: #8a5a78;
+      --accent: #f29ac4;
+      --accent-strong: #cf5f9b;
+      --reply: #8f436f;
+      --shadow: 0 24px 80px rgba(134, 63, 106, 0.22);
+    }
+
     body::before {
       content: "";
       position: fixed;
@@ -45,6 +75,13 @@
       background-size: 38px 38px;
       mask-image: linear-gradient(to bottom, rgba(0, 0, 0, 0.95), transparent 85%);
       z-index: 0;
+    }
+
+    body[data-theme="light"]::before,
+    body[data-theme="pink"]::before {
+      background:
+        linear-gradient(rgba(34, 80, 96, 0.05) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(34, 80, 96, 0.05) 1px, transparent 1px);
     }
 
     .shell {
@@ -103,6 +140,40 @@
       font-size: 12px;
       letter-spacing: 0.08em;
       color: var(--muted);
+    }
+
+    .affection-row {
+      border: 1px solid rgba(141, 230, 234, 0.18);
+      border-radius: 12px;
+      padding: 9px;
+      margin-bottom: 10px;
+      background: rgba(255, 255, 255, 0.03);
+    }
+
+    .affection-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      gap: 8px;
+      margin-bottom: 6px;
+    }
+
+    .affection-level {
+      font-size: 13px;
+      color: var(--accent-strong);
+      font-weight: 600;
+    }
+
+    .affection-points {
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    .affection-note {
+      margin-top: 6px;
+      font-size: 11px;
+      color: var(--muted);
+      line-height: 1.5;
     }
 
     .meter {
@@ -202,6 +273,29 @@
     .portrait.active {
       opacity: 1;
       transform: translateX(-50%) translateY(0) scale(1);
+    }
+
+    .portrait.active.effect-recoil-burst {
+      animation: portraitRecoilBurst var(--recoil-duration, 110ms) linear 1;
+      will-change: transform;
+    }
+
+    .portrait.active.effect-happy {
+      animation: portraitHappyDrop 0.24s cubic-bezier(0.23, 0.85, 0.31, 1) 1;
+      will-change: transform;
+    }
+
+    @keyframes portraitRecoilBurst {
+      0% { transform: translateX(calc(-50% + var(--recoil-x1, -4px))) translateY(0) scale(1); }
+      30% { transform: translateX(calc(-50% + var(--recoil-x2, 6px))) translateY(0) scale(1); }
+      60% { transform: translateX(calc(-50% + var(--recoil-x3, -3px))) translateY(0) scale(1); }
+      100% { transform: translateX(-50%) translateY(0) scale(1); }
+    }
+
+    @keyframes portraitHappyDrop {
+      0% { transform: translateX(-50%) translateY(0) scale(1); }
+      40% { transform: translateX(-50%) translateY(14px) scale(1); }
+      100% { transform: translateX(-50%) translateY(0) scale(1); }
     }
 
     .visual-caption {
@@ -319,21 +413,6 @@
       border-left-color: rgba(255, 176, 176, 0.55);
       background: rgba(255, 176, 176, 0.08);
       color: #ffe9e9;
-    }
-
-    .kw-core {
-      color: #9ff2f7;
-      font-weight: 600;
-    }
-
-    .kw-warm {
-      color: #ffd191;
-      font-weight: 600;
-    }
-
-    .kw-alert {
-      color: #ffb8b8;
-      font-weight: 600;
     }
 
     .choices {
@@ -469,6 +548,244 @@
       line-height: 1.6;
     }
 
+    .archive-toggle {
+      position: absolute;
+      top: 16px;
+      right: 16px;
+      border: 1px solid rgba(141, 230, 234, 0.36);
+      border-radius: 999px;
+      background: rgba(7, 20, 28, 0.88);
+      color: var(--accent-strong);
+      font: inherit;
+      font-size: 13px;
+      padding: 8px 12px;
+      cursor: pointer;
+      z-index: 3;
+      transition: transform 0.16s ease, border-color 0.16s ease;
+    }
+
+    .archive-toggle:hover {
+      transform: translateY(-1px);
+      border-color: rgba(141, 230, 234, 0.62);
+    }
+
+    .archive-overlay[hidden] {
+      display: none;
+    }
+
+    .archive-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 20;
+      background: rgba(3, 9, 14, 0.72);
+      backdrop-filter: blur(4px);
+      display: grid;
+      place-items: center;
+      padding: 12px;
+    }
+
+    .archive-panel {
+      width: min(960px, 100%);
+      max-height: min(88vh, 860px);
+      overflow-y: auto;
+      border: 1px solid var(--line);
+      border-radius: 20px;
+      background: linear-gradient(180deg, rgba(8, 20, 28, 0.96), rgba(4, 11, 16, 0.98));
+      box-shadow: var(--shadow);
+      padding: 14px;
+      display: grid;
+      gap: 12px;
+    }
+
+    .archive-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      padding-bottom: 10px;
+    }
+
+    .archive-head h3 {
+      margin: 0;
+      font-size: 22px;
+    }
+
+    .archive-close {
+      border: 1px solid rgba(141, 230, 234, 0.32);
+      border-radius: 10px;
+      background: rgba(255, 255, 255, 0.04);
+      color: var(--text);
+      font: inherit;
+      padding: 6px 12px;
+      cursor: pointer;
+    }
+
+    .archive-sub {
+      margin: 0;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.6;
+    }
+
+    .collection {
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 14px;
+      padding: 10px;
+      background: rgba(255, 255, 255, 0.02);
+    }
+
+    .collection h4 {
+      margin: 0 0 10px;
+      font-size: 16px;
+      color: var(--accent-strong);
+    }
+
+    .theme-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+      gap: 10px;
+    }
+
+    .theme-option {
+      border-radius: 12px;
+      border: 1px solid rgba(141, 230, 234, 0.22);
+      background: rgba(255, 255, 255, 0.02);
+      color: var(--text);
+      font: inherit;
+      padding: 10px;
+      text-align: left;
+      cursor: pointer;
+    }
+
+    .theme-option strong {
+      display: block;
+      margin-bottom: 5px;
+      font-size: 14px;
+      color: var(--accent-strong);
+    }
+
+    .theme-option span {
+      display: block;
+      font-size: 12px;
+      color: var(--muted);
+      line-height: 1.5;
+    }
+
+    .theme-option.active {
+      border-color: rgba(141, 230, 234, 0.56);
+      background:
+        radial-gradient(circle at top right, rgba(141, 230, 234, 0.12), transparent 35%),
+        rgba(255, 255, 255, 0.05);
+    }
+
+    .theme-option[disabled] {
+      opacity: 0.56;
+      cursor: not-allowed;
+    }
+
+    .collect-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 10px;
+    }
+
+    .collect-card {
+      border-radius: 12px;
+      border: 1px solid rgba(141, 230, 234, 0.18);
+      padding: 10px;
+      background: rgba(255, 255, 255, 0.02);
+      transition: border-color 0.2s ease, background 0.2s ease;
+    }
+
+    .collect-card h5 {
+      margin: 0 0 6px;
+      font-size: 14px;
+    }
+
+    .collect-card p {
+      margin: 0;
+      font-size: 12px;
+      line-height: 1.6;
+      color: var(--muted);
+    }
+
+    .collect-card .state {
+      margin-top: 6px;
+      font-size: 12px;
+    }
+
+    .collect-card.unlocked {
+      border-color: rgba(141, 230, 234, 0.52);
+      background:
+        radial-gradient(circle at top right, rgba(141, 230, 234, 0.12), transparent 40%),
+        rgba(255, 255, 255, 0.05);
+    }
+
+    .collect-card.unlocked .state {
+      color: var(--accent-strong);
+    }
+
+    .collect-card.locked {
+      opacity: 0.62;
+      filter: grayscale(0.22);
+    }
+
+    .achievement-toast {
+      position: fixed;
+      left: 50%;
+      bottom: 20px;
+      transform: translateX(-50%) translateY(24px);
+      border: 1px solid rgba(141, 230, 234, 0.5);
+      border-radius: 12px;
+      background: rgba(7, 20, 28, 0.96);
+      color: var(--accent-strong);
+      padding: 10px 14px;
+      font-size: 14px;
+      line-height: 1.5;
+      z-index: 30;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.2s ease, transform 0.2s ease;
+      box-shadow: 0 12px 32px rgba(0, 0, 0, 0.35);
+    }
+
+    .achievement-toast.visible {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+
+    body[data-theme="light"] .shell,
+    body[data-theme="pink"] .shell {
+      background: rgba(255, 255, 255, 0.58);
+    }
+
+    body[data-theme="light"] .stats,
+    body[data-theme="light"] .panel,
+    body[data-theme="light"] .visual,
+    body[data-theme="light"] .dialogue,
+    body[data-theme="light"] .scene-tag,
+    body[data-theme="light"] .scene-count,
+    body[data-theme="light"] .archive-panel,
+    body[data-theme="light"] .archive-toggle,
+    body[data-theme="light"] .ending-card {
+      background: rgba(255, 255, 255, 0.74);
+      color: var(--text);
+    }
+
+    body[data-theme="pink"] .stats,
+    body[data-theme="pink"] .panel,
+    body[data-theme="pink"] .visual,
+    body[data-theme="pink"] .dialogue,
+    body[data-theme="pink"] .scene-tag,
+    body[data-theme="pink"] .scene-count,
+    body[data-theme="pink"] .archive-panel,
+    body[data-theme="pink"] .archive-toggle,
+    body[data-theme="pink"] .ending-card {
+      background: rgba(255, 248, 252, 0.78);
+      color: var(--text);
+    }
+
     @media (max-width: 1024px) {
       .layout {
         grid-template-columns: 1fr;
@@ -493,6 +810,11 @@
 
       .dialogue {
         max-height: 380px;
+      }
+
+      .archive-toggle {
+        top: 12px;
+        right: 12px;
       }
     }
 
@@ -522,17 +844,26 @@
 </head>
 <body>
   <main class="shell">
+    <button class="archive-toggle" id="archiveToggle" type="button">结局与成就</button>
     <section class="header">
       <div>
-        <p class="eyebrow">Text Love Game / 约十分钟</p>
+        <p class="eyebrow">Text Love Game / 分支长篇</p>
         <h1>白子*恐怖：夜巡与护送行动</h1>
         <p class="subhead">
-          10幕互动文字恋爱剧情：在阿拜多斯夜巡、办公室、健身房和节日街区中，通过选择推进关系并触发专属结局。
+          10幕以上互动文字恋爱剧情：在阿拜多斯夜巡、办公室、健身房和节日街区中，通过选择推进关系并触发专属结局。
           每一幕单独展示，打字机播放时按 <kbd>空格</kbd> 可立即显示当前段落全文。
         </p>
       </div>
       <aside class="stats">
         <p>同步记录</p>
+        <div class="affection-row">
+          <div class="affection-top">
+            <span class="affection-level" id="affectionLevel">好感 Lv.0</span>
+            <span class="affection-points" id="affectionPoints">0 / 30</span>
+          </div>
+          <div class="meter-track"><div class="meter-fill" id="affectionBar"></div></div>
+          <div class="affection-note" id="affectionNote">每点信赖/安定会转化为好感。每次通关额外 +5。</div>
+        </div>
         <div class="meter">
           <div class="meter-label">
             <span>信赖</span>
@@ -559,6 +890,7 @@
           <img id="portraitSideCalm" class="portrait" src="立绘侧脸忧郁.jpg" alt="白子*恐怖侧脸立绘">
           <img id="portraitSideKiller" class="portrait" src="立绘侧脸杀意.jpg" alt="白子*恐怖侧脸杀意立绘">
           <img id="portraitEyesClosed" class="portrait" src="正脸立绘闭眼.jpeg" alt="白子*恐怖正脸闭眼立绘">
+          <img id="portraitMeme" class="portrait" src="立绘简单黑子.jpg" alt="白子表情包">
         </div>
         <div class="visual-caption">
           <span id="moodLabel">状态：观测中</span>
@@ -569,7 +901,7 @@
       <section class="panel">
         <div class="scene-meta">
           <span class="scene-tag" id="sceneTag">序章</span>
-          <span class="scene-count" id="sceneCount">1 / 10</span>
+          <span class="scene-count" id="sceneCount">第 1 幕</span>
         </div>
         <div class="speaker" id="speaker">白子*恐怖</div>
         <h2 class="scene-title" id="sceneTitle">站台会合</h2>
@@ -588,6 +920,29 @@
     </section>
   </main>
 
+  <div class="archive-overlay" id="archiveOverlay" hidden>
+    <section class="archive-panel" role="dialog" aria-modal="true" aria-labelledby="archiveTitle">
+      <div class="archive-head">
+        <h3 id="archiveTitle">结局与成就</h3>
+        <button class="archive-close" id="archivePanelClose" type="button">关闭</button>
+      </div>
+      <p class="archive-sub">累计游玩次数：<strong id="playCount">0</strong></p>
+      <section class="collection">
+        <h4>结局图鉴</h4>
+        <div class="collect-grid" id="endingCollection"></div>
+      </section>
+      <section class="collection">
+        <h4>成就图鉴</h4>
+        <div class="collect-grid" id="achievementCollection"></div>
+      </section>
+      <section class="collection">
+        <h4>主题切换</h4>
+        <div class="theme-grid" id="themeSwitcher"></div>
+      </section>
+    </section>
+  </div>
+  <div class="achievement-toast" id="achievementToast" role="status" aria-live="polite"></div>
+
   <script>
     const scenes = [
       {
@@ -599,29 +954,25 @@
         route: "废线地铁口",
         portrait: "full",
         lines: [
-          "嗯，老师到了。和我预测时间误差四分钟，属于优秀区间。",
-          "白子把一根巧克力递到你手里：“先补糖，再走长线。今晚路程会久一点。”",
-          "她看了看路牌，又看了看你手里的记事本，语气平稳：“老师这次没有迷路，只是故意绕路观察。很好。”",
-          "“夜巡开始前，请老师给一个行动主题。”"
+          "嗯，老师到了。时间误差三分钟，状态看起来也还行。",
+          "白子把巧克力递给你：“先补糖，再执行长线。今晚会经过多个社团活动区。”",
+          "她抬眼看你，语气平稳却认真：“我会负责路线和风险。老师负责给我方向。”",
+          "“第一条原则，请老师下达。”"
         ],
         choices: [
           {
-            label: "主题：稳态并排",
-            detail: "速度可以变，但两人的位置不变。",
-            effects: { trust: 2, calm: 2 },
-            reply: "收到。默认并排，除非老师主动要求切换。"
-          },
-          {
-            label: "主题：少说话，多同步",
-            detail: "不需要高频交流，但要持续对齐。",
+            label: "原则A：先稳后快",
+            detail: "分支A（稳态推进）｜选后下一幕会遇到：阿拜多斯·对策委员会",
             effects: { trust: 1, calm: 3 },
-            reply: "可执行。沉默模式下，我会更频繁回头确认老师。"
+            reply: "收到。先稳态，再提速。",
+            next: "office"
           },
           {
-            label: "主题：严肃里保留一点轻松",
-            detail: "气氛不沉底，但也不失真。",
-            effects: { trust: 2, calm: 1 },
-            reply: "嗯，这个比例合理。"
+            label: "原则B：边走边磨合",
+            detail: "分支B（机动推进）｜选后下一幕会遇到：阿拜多斯·对策委员会",
+            effects: { trust: 2, calm: 2 },
+            reply: "明白。保持移动，同时对齐。",
+            next: "office"
           }
         ]
       },
@@ -634,30 +985,27 @@
         route: "夏莱·老师办公室",
         portrait: "eyesClosed",
         lines: [
-          "你们先到老师办公室。她站在白板前，认真看完今天的安排，再把“例会”旁边补了一行：‘先确认老师有进食。’",
-          "桌上空着一个相框，像一个还没写完的句号。",
-          "“这里缺的不是武器库。”她轻轻放下笔，“是能让老师停下来恢复状态的区域。”",
-          "她把笔递给你：“老师决定配置，我来落地。”"
+          "你们先到老师办公室。她把“例会”旁边补了一行：先确认老师有进食。",
+          "星野发来一条语音留言：‘别让老师又忘了吃饭。’白子把它标成高优先级提醒。",
+          "桌上的空相框像一个待补完的节点。",
+          "“这里需要恢复区域，不需要噪音。”她把笔递给你。",
+          "“老师来定规则，我来执行。”"
         ],
         choices: [
           {
-            label: "设立“战术零食补给站”",
-            detail: "用最小成本，保证长线作战状态。",
+            label: "建立战术零食补给站",
+            detail: "分支A（补给线）｜选后下一幕会遇到：白子个人健身房训练线",
             effects: { trust: 2, calm: 2 },
             unlock: "officeSnacks",
-            reply: "方案通过。我会做库存表，避免断供。"
+            reply: "方案通过。库存表由我维护。",
+            next: "gym"
           },
           {
-            label: "把相框先留空，等一起填进去",
-            detail: "先不急着定义，把未来留在墙上。",
-            effects: { trust: 3, calm: 0 },
-            reply: "嗯。延期执行，不等于取消执行。"
-          },
-          {
-            label: "制定‘不失联’工作规则",
-            detail: "把关心写成制度，降低意外概率。",
+            label: "建立不失联工作规则",
+            detail: "分支B（纪律线）｜选后下一幕会遇到：白子个人健身房训练线",
             effects: { trust: 1, calm: 3 },
-            reply: "规则已记录。老师若违规，我会提醒。"
+            reply: "规则已记录，老师违规会提醒。",
+            next: "gym"
           }
         ]
       },
@@ -670,244 +1018,383 @@
         route: "白子自建健身房",
         portrait: "full",
         lines: [
-          "她带你去她整理出来的一层健身房。器械不豪华，但每一件都维护得很好。",
-          "“这是高优先级区域。”白子说，“体能稳定，判断会更稳。”",
-          "她把计时器递给你，语气依旧平静：“老师不用硬撑。我们做配速训练，不做无意义冲刺。”",
-          "“先热身，再夜巡。”"
+          "她带你到自建健身房。器械保养状态很好。",
+          "“体能稳定，判断才会稳。”白子把计时器交给你。",
+          "你们做完配速训练，呼吸和节拍逐渐一致。",
+          "“下一站是外场高压区。”"
         ],
         choices: [
           {
-            label: "和她做双人节奏训练",
-            detail: "你跟她同拍，不比极限，只比持续。",
+            label: "按计划进行外场演练",
+            detail: "分支A（实操线）｜选后下一幕会遇到：歌赫娜·便利屋68",
             effects: { trust: 2, calm: 2 },
-            reply: "节奏一致。嗯，老师适应得很快。"
+            reply: "收到。进入实操模式。",
+            next: "bank"
           },
           {
-            label: "请她给你定长期体能计划",
-            detail: "你把这件事当成长线合作。",
-            effects: { trust: 3, calm: 1 },
-            reply: "收到。计划会按老师工作强度动态调整。"
-          },
-          {
-            label: "提议把冷却拉伸加入固定流程",
-            detail: "不只追求输出，也确保恢复。",
+            label: "先走节日区联动，再进外场",
+            detail: "分支B（联动线）｜选后下一幕会遇到：崔尼蒂·补课部",
             effects: { trust: 1, calm: 3 },
-            reply: "同意。恢复环节常被忽略，但很关键。"
-          }
-        ]
-      },
-      {
-        id: "valentine",
-        tag: "第三幕",
-        title: "情人节缓存",
-        speaker: "白子*恐怖",
-        mood: "轻微偏移",
-        route: "旧商店街",
-        portrait: "chibi",
-        lines: [
-          "旧商店街还留着情人节装饰。风一吹，纸心轻轻晃。",
-          "白子拿出一整块巧克力，包装和过去那块几乎相同。",
-          "“像缓存重现。”她说，“每次到这一天，它都会回来。”",
-          "她看着你：“老师，这算重复，还是确认。”"
-        ],
-        choices: [
-          {
-            label: "算确认：同样的礼物，不同的当下",
-            detail: "过去会回响，但不必重演。",
-            effects: { trust: 2, calm: 1 },
-            reply: "嗯，这个定义我接受。"
-          },
-          {
-            label: "算稳定：不需要每次都改版",
-            detail: "保留能让人安心的固定项。",
-            effects: { trust: 1, calm: 2 },
-            reply: "稳定版本，长期维护。"
-          },
-          {
-            label: "算双人密钥：必须一人一半",
-            detail: "把礼物改写成同步协议。",
-            effects: { trust: 3, calm: 0 },
-            reply: "密钥已分发。老师请保持在线。"
-          }
-        ]
-      },
-      {
-        id: "spring",
-        tag: "第四幕",
-        title: "春节街区",
-        speaker: "白子*恐怖",
-        mood: "节日试运行",
-        route: "阿拜多斯旧街灯区",
-        portrait: "sideCalm",
-        lines: [
-          "灯笼把街区照得温和了一点。她侧脸上的冷色也被拉暖。",
-          "白子拎起一条红绳看了几秒，像在评估是否影响骑行动作。",
-          "“老师，节日感和执行力可以并存吗。”她问。",
-          "你们站在灯下，等一个可实施的答案。"
-        ],
-        choices: [
-          {
-            label: "命名“福字机动组”并保留执勤流程",
-            detail: "先礼后兵，语气温和，动作不慢。",
-            effects: { trust: 2, calm: 1 },
-            unlock: "lanternPatrol",
-            reply: "命名通过。执行口令已更新。"
-          },
-          {
-            label: "把福字贴在头套内侧，只作为私密标记",
-            detail: "对外保持克制，对内保留温度。",
-            effects: { trust: 3, calm: 0 },
-            reply: "……我会保留这个版本。"
-          },
-          {
-            label: "今天只巡逻，不追击",
-            detail: "把节日夜定义为低风险维护日。",
-            effects: { trust: 1, calm: 3 },
-            reply: "收到。今晚优先‘稳定’，不是‘压制’。"
+            reply: "同意。先联动，再进高压区。",
+            next: "spring"
           }
         ]
       },
       {
         id: "bank",
-        tag: "第五幕",
+        tag: "第三幕",
         title: "银行外场演练",
         speaker: "白子*恐怖",
         mood: "高专注",
         route: "黑市银行外街",
         portrait: "sideKiller",
+        portraitEffect: "recoil",
         lines: [
-          "她带你停在银行外街的转角，拿出头套，又很快收回去。",
-          "“先声明，不是真的抢银行。”她语气平稳，“今天是‘反抢劫应对演练’。”",
-          "她在地上画出三条撤离线和两条掩护线，动作利落得像上课示范。",
-          "“老师来选演练目标：速度、隐蔽，还是沟通。”"
+          "她在拐角处停下，拿出头套又很快收回。",
+          "“先声明，不是真的抢银行。”她平静地说，“今天是反抢劫应对演练。”",
+          "远端频道里传来风纪委员会的简讯：日奈批准临时封控，亚子与伊织在外围待命。",
+          "地面很快被她画出撤离线和掩护线。",
+          "“老师选演练目标。”"
         ],
         choices: [
           {
-            label: "演练“零损伤撤离”",
-            detail: "目标是无人受伤、无财产损失、流程完整。",
+            label: "零损伤演练",
+            detail: "分支A（止损线）｜选后下一幕会遇到：歌赫娜·便利屋68（爱露、佳代子）",
             effects: { trust: 2, calm: 2 },
             unlock: "bankRehearsal",
-            reply: "收到。我们做最干净的版本。"
+            reply: "收到。做最干净版本。",
+            next: "b68"
           },
           {
-            label: "演练“先沟通后制止”",
-            detail: "优先口头劝停，保留武力阈值。",
-            effects: { trust: 1, calm: 3 },
-            reply: "可执行。先语言压制，再行动控制。"
-          },
-          {
-            label: "演练“十五秒态势判断”",
-            detail: "你负责判断，她负责执行。",
+            label: "先转联合复盘，再回到外场",
+            detail: "分支B（复盘线）｜选后下一幕会遇到：崔尼蒂·补课部（花子、梓、小春）",
             effects: { trust: 3, calm: 1 },
-            reply: "分工明确。老师做判断，我做收束。"
+            reply: "先把流程写清楚，再继续外场。",
+            next: "debrief"
+          }
+        ]
+      },
+      {
+        id: "b68",
+        tag: "第四幕",
+        title: "便利屋68交火线",
+        speaker: "白子*恐怖",
+        mood: "高压",
+        route: "废仓库街",
+        portrait: "sideKiller",
+        portraitEffect: "recoil",
+        lines: [
+          "你们转入仓库街时，与便利屋68在拐角同时锁定。爱露在前，佳代子压后。",
+          "双方几乎同步入掩体，短促枪声在巷道内反弹。",
+          "白子压低声音：“对方不是主目标，先止损。”",
+          "她的枪口稳定，没有越线追击。"
+        ],
+        choices: [
+          {
+            label: "发停火信号并交换识别码",
+            detail: "分支A（停火线）｜选后下一幕会遇到：崔尼蒂·补课部（联合复盘）",
+            effects: { trust: 2, calm: 3 },
+            unlock: "b68Ceasefire",
+            reply: "信号发出。对方回码。交火终止。",
+            next: "debrief"
+          },
+          {
+            label: "压制后撤，转入安全线",
+            detail: "分支B（脱离线）｜选后下一幕会遇到：崔尼蒂·补课部（联合复盘）",
+            effects: { trust: 2, calm: 1 },
+            reply: "收到。压制三秒，后撤。",
+            next: "debrief"
+          }
+        ]
+      },
+      {
+        id: "debrief",
+        tag: "第五幕",
+        title: "联合复盘会",
+        speaker: "白子*恐怖",
+        mood: "冷静收束",
+        route: "阿拜多斯临时会议室",
+        portrait: "sideCalm",
+        lines: [
+          "对策委员会与补课部成员围在临时地图前做复盘。花子、小春和梓分别补充了盲区记录。",
+          "白子把误判原因与处置顺序逐条写到白板上。",
+          "风纪频道同步了伊织和亚子的封控时间窗，数据被直接并入你的路线表。",
+          "“老师的判断把损失压在了可控范围。”她像在提交正式报告。",
+          "复盘结束后，她合上笔帽：“下一段继续。”"
+        ],
+        choices: [
+          {
+            label: "按联合图继续推进",
+            detail: "分支A（联动线）｜选后下一幕会遇到：崔尼蒂·补课部（街区协同）",
+            effects: { trust: 2, calm: 2 },
+            unlock: "trinitySync",
+            reply: "收到。按联合图推进。",
+            next: "spring"
+          },
+          {
+            label: "转入技术支援，再回主线",
+            detail: "分支B（技术线）｜选后下一幕会遇到：千禧年·工程部（响）",
+            effects: { trust: 1, calm: 3 },
+            reply: "同意。先接技术支援。",
+            next: "engineering"
+          }
+        ]
+      },
+      {
+        id: "spring",
+        tag: "第六幕",
+        title: "春节街区",
+        speaker: "白子*恐怖",
+        mood: "节日试运行",
+        route: "阿拜多斯旧街灯区",
+        portrait: "sideCalm",
+        portraitEffect: "happyDrop",
+        lines: [
+          "灯笼把街区照得温和，补课部正在做夜间秩序维护。花子负责联络，梓和小春在巷口警戒。",
+          "白子接过巡逻图后迅速完成重排。",
+          "“节日感和执行力可以并存。”她低声说。",
+          "你们确认完路径后继续前推。"
+        ],
+        choices: [
+          {
+            label: "保留福字机动组口令",
+            detail: "分支A（节日执勤线）｜选后下一幕会遇到：千禧年·工程部（响）",
+            effects: { trust: 2, calm: 1 },
+            unlock: "lanternPatrol",
+            reply: "口令保留。执行继续。",
+            next: "engineering"
+          },
+          {
+            label: "转入模拟战参数校验",
+            detail: "分支B（校验线）｜选后下一幕会遇到：千禧年·游戏开发部（桃、绿、爱丽丝）",
+            effects: { trust: 1, calm: 3 },
+            reply: "收到。先做参数校验。",
+            next: "gamedev"
+          }
+        ]
+      },
+      {
+        id: "engineering",
+        tag: "第七幕",
+        title: "工程部支援",
+        speaker: "白子*恐怖",
+        mood: "技术协作",
+        route: "千禧年临时工坊",
+        portrait: "full",
+        lines: [
+          "千禧年工程部正在调试照明无人机，响把备用机直接交给你们。",
+          "她们交来一台备用机，建议用于盲区照明和热区标记。",
+          "白子快速校验参数：“可用。老师定优先级。”",
+          "旋翼声把夜色切出更清晰的层次。"
+        ],
+        choices: [
+          {
+            label: "优先照明，先清盲区",
+            detail: "分支A（照明线）｜选后下一幕会遇到：千禧年·游戏开发部（桃、绿、爱丽丝）",
+            effects: { trust: 1, calm: 3 },
+            unlock: "engineeringLight",
+            reply: "照明优先。先清盲区。",
+            next: "gamedev"
+          },
+          {
+            label: "优先标记，建立热区图",
+            detail: "分支B（标记线）｜选后下一幕会遇到：千禧年·游戏开发部（桃、绿、爱丽丝）",
+            effects: { trust: 2, calm: 2 },
+            reply: "标记优先。热区图实时更新。",
+            next: "gamedev"
+          }
+        ]
+      },
+      {
+        id: "gamedev",
+        tag: "第八幕",
+        title: "游戏开发部模拟战",
+        speaker: "白子*恐怖",
+        mood: "短暂松弛",
+        route: "千禧年社团活动室",
+        portrait: "meme",
+        portraitEffect: "happyDrop",
+        lines: [
+          "你们被游戏开发部拉去测试夜巡协同射击原型。桃负责流程，绿调参数，爱丽丝负责联机稳定。",
+          "白子读完说明后直接联机，动作快得像实战接入。",
+          "测试结果弹出：默契度高，节奏稳定。",
+          "她看着成绩，表情包脸仍然很平。"
+        ],
+        choices: [
+          {
+            label: "继续测试，拉高协同值",
+            detail: "分支A（模拟战线）｜选后下一幕会遇到：无（转后勤补给）",
+            effects: { trust: 2, calm: 2 },
+            unlock: "gameDevSync",
+            reply: "继续测试。把协同值拉满。",
+            next: "store"
+          },
+          {
+            label: "保存录像，转入实地复盘",
+            detail: "分支B（录像复盘线）｜选后下一幕会遇到：无（转后勤补给）",
+            effects: { trust: 1, calm: 3 },
+            reply: "录像已保存。转入实地复盘。",
+            next: "store"
           }
         ]
       },
       {
         id: "store",
-        tag: "第六幕",
+        tag: "第九幕",
         title: "便利店短停",
         speaker: "白子*恐怖",
         mood: "短暂放松",
         route: "二十四小时便利店",
         portrait: "chibi",
+        portraitEffect: "happyDrop",
         lines: [
-          "你们在便利店短停。她先确认出口，再去拿补给。",
-          "白子把牛奶、热饮和能量棒按顺序放进篮子里，像在整理行军包。",
-          "结账时她盯着收银台旁边的狼耳贴纸看了两秒，语气一本正经：“这个……有伪装价值。”",
-          "她又补了一句：“可爱伪装，也算伪装。”"
+          "你们在便利店短停。白子先确认出口，再去拿补给。",
+          "货架另一侧传来美食研究会晴奈的点评声：‘热饮比冷饮更配夜巡。’白子点头表示采纳。",
+          "牛奶、热饮、能量棒被她按用途摆好。",
+          "她看了眼收银台贴纸：“这个有伪装价值。”",
+          "你们补完给后转入夜巡后半程。"
         ],
         choices: [
           {
-            label: "把贴纸买下，贴在她工具箱",
-            detail: "在硬质装备上留一个柔软标记。",
+            label: "把贴纸贴进工具箱档案",
+            detail: "分支A（装备标记线）｜选后下一幕会遇到：无（进入拉面中场）",
             effects: { trust: 2, calm: 1 },
             unlock: "stickerArchive",
-            reply: "收到。外观更新后，识别度会更高。"
+            reply: "已归档。标记完成。",
+            next: "ramen"
           },
           {
-            label: "把热饮设为夜巡固定项",
-            detail: "降低夜间疲劳，延长稳定区间。",
+            label: "把热饮设为固定补给项",
+            detail: "分支B（状态维护线）｜选后下一幕会遇到：无（进入拉面中场）",
             effects: { trust: 1, calm: 3 },
-            reply: "同意。体温管理会提高判断精度。"
-          },
-          {
-            label: "请她教你三步补给法",
-            detail: "把她的经验变成共享技能。",
-            effects: { trust: 2, calm: 2 },
-            reply: "步骤是：先用途，再时长，最后偏好。老师记住了。"
+            reply: "固定项已加入流程。",
+            next: "ramen"
           }
         ]
       },
       {
         id: "ramen",
-        tag: "第七幕",
+        tag: "第十幕",
         title: "拉面中场",
         speaker: "白子*恐怖",
         mood: "轻度松弛",
         route: "深夜拉面店",
         portrait: "sideCalm",
         lines: [
-          "夜巡过半，你们在一家深夜拉面店坐下。她点了标准份，你点了加量。",
-          "吃到一半，她抬眼看你，语气很平：“老师，过去我和另一个白子挑战过特大碗。结果两个人都吃成了球。”",
-          "她顿了顿：“今天不复现事故。我们以可持续为目标。”",
-          "你听见她的补充：“但如果老师想挑战，我会负责回收。”"
+          "夜巡过半，你们在深夜拉面店坐下。",
+          "白子吃「柴关特大拉面」，吃到一半抬眼看你：“过去我和另一个白子挑战特大碗，最后都吃成了球。”",
+          "她放下筷子：“今天保持可持续，不复现事故。”",
+          "“老师如果还要挑战，我会做阈值管理。”"
         ],
         choices: [
           {
-            label: "正常吃完，保留夜巡后半程状态",
-            detail: "不做极限挑战，执行长期主义。",
+            label: "正常吃完，保留后半程状态",
+            detail: "分支A（稳态饮食线）｜选后下一幕会遇到：无（进入维修仓复盘）",
             effects: { trust: 1, calm: 3 },
-            reply: "正确。稳定输出比爆发更重要。"
+            reply: "正确。稳定输出优先。",
+            next: "workshop"
           },
           {
-            label: "挑战加量，但设立“吃成球即停”阈值",
-            detail: "保留20%冒险，同时严格止损。",
+            label: "设立“吃成球即停”阈值",
+            detail: "分支B（临界挑战线）｜选后下一幕会遇到：无（进入维修仓复盘）",
             effects: { trust: 2, calm: 1 },
             unlock: "ramenSphere",
-            reply: "阈值规则成立。今晚我们只到临界，不越线。"
+            reply: "阈值成立。到临界即停。",
+            next: "workshop"
+          }
+        ]
+      },
+      {
+        id: "workshop",
+        tag: "第十一幕",
+        title: "维修仓复盘",
+        speaker: "白子*恐怖",
+        mood: "收束前准备",
+        route: "自行车维修仓",
+        portrait: "full",
+        lines: [
+          "她在维修仓重新锁紧车铃，检查刹车线张力。",
+          "“稳定性优先，双人路线要留冗余。”",
+          "你们快速复盘完设备与路线参数。",
+          "“最后一段，去画室。”"
+        ],
+        choices: [
+          {
+            label: "稳态推进进入画室",
+            detail: "分支A（稳态收束线）｜选后下一幕会遇到：无（进入临时画室）",
+            effects: { trust: 1, calm: 3 },
+            reply: "收到。稳态推进。",
+            next: "painting"
           },
           {
-            label: "把加量分成两人份，共同完成",
-            detail: "让挑战变成协作任务。",
-            effects: { trust: 3, calm: 1 },
-            reply: "合作模式通过。老师的分配很有效率。"
+            label: "机动推进进入画室",
+            detail: "分支B（机动收束线）｜选后下一幕会遇到：无（进入临时画室）",
+            effects: { trust: 2, calm: 2 },
+            reply: "同意。机动推进。",
+            next: "painting"
           }
         ]
       },
       {
         id: "painting",
-        tag: "第八幕",
+        tag: "第十二幕",
         title: "临时画室",
         speaker: "白子*恐怖",
         mood: "收束",
         route: "空教室",
         portrait: "eyesClosed",
         lines: [
-          "空教室里留着画架和旧颜料。她把窗帘拉开一点，让光线落在画布中央。",
-          "白子把画笔递给你，动作很慢：“老师定主题，我负责执行。”",
-          "她看了一眼你办公室里的空相框，声音更轻：“如果作品完成，我会认真保存。”",
-          "教室很安静，只剩笔尖摩擦画布的声音。"
+          "空教室里留着画架与旧颜料，光线刚好落在画布中央。",
+          "白子把画笔递给你：“老师定主题，我负责执行。”",
+          "她看了一眼办公室空相框，声音很轻。",
+          "“作品完成后，我会认真保存。”"
         ],
         choices: [
           {
             label: "和白子一起画画",
-            detail: "不求完美构图，只求共同完成。",
+            detail: "分支A（共作线）｜选后下一幕会遇到：无（进入校门留步）",
             effects: { trust: 3, calm: 1 },
             unlock: "framedPainting",
-            reply: "嗯。共同作业，归档等级会很高。"
+            reply: "共同作业，归档等级很高。",
+            next: "gate"
           },
           {
-            label: "画一张夜巡路线图",
-            detail: "把今晚的并排行动可视化。",
+            label: "画夜巡路线图",
+            detail: "分支B（作战图线）｜选后下一幕会遇到：无（进入校门留步）",
             effects: { trust: 2, calm: 2 },
-            reply: "可复现方案。下次可以按图执行。"
+            reply: "可复现方案，便于下次执行。",
+            next: "gate"
+          }
+        ]
+      },
+      {
+        id: "gate",
+        tag: "第十三幕",
+        title: "校门留步",
+        speaker: "白子*恐怖",
+        mood: "坦率",
+        route: "阿拜多斯校门",
+        portrait: "sideCalm",
+        lines: [
+          "回到校门前，她没有立刻道别。",
+          "“老师，今晚我一直在确认：能不能在你身边维持稳定频率。”",
+          "她把最后一块巧克力掰成两半，递给你一半。",
+          "“我们做最后确认，然后定长期参数。”"
+        ],
+        choices: [
+          {
+            label: "下一次继续并排",
+            detail: "分支A（并排常态线）｜选后下一幕会遇到：无（进入终幕确认）",
+            effects: { trust: 3, calm: 1 },
+            reply: "默认并排。收到。",
+            next: "final"
           },
           {
-            label: "只写一句：并排就好",
-            detail: "用最少字数表达核心结论。",
-            effects: { trust: 2, calm: 1 },
-            reply: "简短，但准确。我会记住。"
+            label: "下一次先复盘再夜巡",
+            detail: "分支B（流程固化线）｜选后下一幕会遇到：无（进入终幕确认）",
+            effects: { trust: 1, calm: 3 },
+            reply: "流程化方案通过。",
+            next: "final"
           }
         ]
       },
@@ -917,114 +1404,85 @@
         title: "最后确认",
         speaker: "白子*恐怖",
         mood: "参数锁定",
-        route: "阿拜多斯校门",
+        route: "阿拜多斯夜风线",
         portrait: "sideKiller",
+        isFinal: true,
         lines: [
-          "回到校门前，她没有立刻道别，只是安静看着你。",
-          "“老师，今晚我一直在确认一件事：我能不能在你身边保持稳定频率。”",
-          "她的语气很轻，却很清楚：“如果以后我想冲太快，老师希望自己是刹车、路标，还是并行引擎。”",
+          "风从校门外吹过来，她把头发别到耳后。",
+          "“老师，如果以后我想冲太快，你希望自己是并行引擎，还是失控阈值刹车。”",
+          "她看着你：“我会按这个答案长期执行。”",
           "“嗯，请给最终指令。”"
         ],
         choices: [
           {
-            label: "我做路标，你做速度",
-            detail: "方向和动能分离，互相补足。",
-            effects: { trust: 2, calm: 2 },
-            reply: "路标+速度，职责清晰。我会按这个模式长期执行。"
-          },
-          {
-            label: "我做并行引擎，不让你独转",
-            detail: "并肩承担，不让她单人超负荷。",
+            label: "并行引擎",
+            detail: "分支A（并行承载线）｜选后触发：终局结算",
             effects: { trust: 3, calm: 1 },
-            reply: "……收到。以后我会把老师算进默认参数。"
+            endingHint: "parallel",
+            reply: "收到。老师进入默认队列。"
           },
           {
-            label: "我做刹车，只在失控阈值介入",
-            detail: "保留她的锋利，同时防止自损。",
+            label: "阈值刹车",
+            detail: "分支B（失控防护线）｜选后触发：终局结算",
             effects: { trust: 1, calm: 3 },
+            endingHint: "guard",
             reply: "精准阈值。我会信任这个机制。"
           }
         ]
       }
     ];
 
-    const normalEndings = {
-      highTrust: {
+    const endings = {
+      parallel: {
         title: "结局：并行引擎",
         mood: "高同步",
         route: "双人夜骑",
         portrait: "full",
+        portraitEffect: "happyDrop",
         lines: [
-          "白子把头套折好放进你手里，像把一份权限正式移交。",
-          "“从今天起，老师在我的默认队列里。”她轻轻点头，“不是临时同行，是固定并行。”",
-          "你们沿着夜路并排往前，速度稳定，呼吸也稳定。"
+          "白子把头套折好放进你手里，像正式移交一份权限。",
+          "“从今天起，老师是固定并行，不是临时同行。”",
+          "你们沿着夜路并排往前，速度稳定，节奏一致。"
         ],
-        quote: "“嗯，老师在旁边，路线会更准。”"
+        quote: "“老师在旁边，路线会更准。”"
       },
-      highCalm: {
+      guard: {
         title: "结局：稳态回路",
         mood: "安定优先",
         route: "办公室-夜巡双流程",
         portrait: "eyesClosed",
         lines: [
-          "你们把整晚的节奏写成可复用流程：先办公室确认状态，再夜巡，再并排回程。",
-          "白子把规则抄在白板边角，字迹很整齐，像把混乱彻底归档。",
-          "她仍然锋利，但每次出发前都会先问一句：“老师，今天走稳态还是高速。”"
+          "你们把整晚节奏写成可复用流程：先确认状态，再夜巡，再并排回程。",
+          "白子把规则抄在白板边角，字迹很整齐。",
+          "她仍然锋利，但每次出发前都会先问你今天走稳态还是高速。"
         ],
-        quote: "“老师让我慢一点，不是让我停下，是让我更完整。”"
+        quote: "“慢一点，不是停下，是更完整。”"
       },
-      balanced: {
-        title: "结局：继续同路",
+      beacon: {
+        title: "结局：同路信标",
         mood: "谨慎亲近",
         route: "下次邀约",
         portrait: "sideCalm",
         lines: [
-          "她没有做夸张承诺，只是把今晚每一幕认真记住。",
+          "她没有做夸张承诺，只把今晚每个节点认真记住。",
           "“嗯，还要继续观察。”她看着你，“但老师已经是我会主动靠近的人。”",
-          "临走前她把最后一块巧克力塞进你掌心，像发下一次任务邀请。"
+          "临走前她把最后半块巧克力放进你掌心，像发下一次任务邀请。"
         ],
         quote: "“下次也一起走吧，老师。”"
-      }
-    };
-
-    const specialEndings = {
+      },
       framedPainting: {
         title: "结局：被精心裱装的画",
         mood: "专属收藏",
         route: "老师办公室内墙",
         portrait: "eyesClosed",
+        portraitEffect: "happyDrop",
         illustration: "赠予白子的画.JPG",
         lines: [
           "那天画完后，白子把画纸卷起来带走，只说了一句“我会处理保存”。",
           "三天后你回到办公室，空相框里已经换上你们共同完成的画，被裱得非常认真。",
-          "相框右下角多了一行很小的字：‘与老师共同作业。归档等级：最高。’",
-          "白子靠在门边，语气平静：“嗯，这样老师每天都能看见我留下的证据。”"
+          "相框右下角多了一行小字：‘与老师共同作业。归档等级：最高。’"
         ],
-        quote: "“我确认过，这幅画不会丢。”"
-      },
-      officeSnacks: {
-        title: "结局：办公室零食防线",
-        mood: "补给满格",
-        route: "战术补给点",
-        portrait: "chibi",
-        lines: [
-          "办公室被你们改造成补给站，抽屉按照糖分和用途分层。",
-          "白子写了《高压工作应急投喂条例》：老师连续工作三小时，强制补给。",
-          "后来大家默认一件事：老师办公室最安全，因为白子会定时来巡检，也定时来看你。"
-        ],
-        quote: "“先补给，再战斗。流程无可挑剔。”"
-      },
-      lanternPatrol: {
-        title: "结局：福字机动组",
-        mood: "节日执勤",
-        route: "阿拜多斯拜年线",
-        portrait: "sideKiller",
-        lines: [
-          "她真的把春联贴在车前梁，车尾挂上会响的福字牌。",
-          "第一次出勤时，坏人以为是节庆车队，下一秒就被精准制服。",
-          "你在后面负责喊“新年快乐”，她在前面负责“请配合调查”。效率意外地高。"
-        ],
-        quote: "“节日感和执行力，不冲突。”"
+        quote: "“这幅画不会丢。”"
       },
       bankRehearsal: {
         title: "结局：银行零损伤演练",
@@ -1033,22 +1491,10 @@
         portrait: "sideKiller",
         lines: [
           "那次外场演练最终零损伤收尾，流程完整，没有任何财产损失。",
-          "白子把你的判断节点全部记录下来，做成了新的应急手册。",
-          "她在最后一页写下备注：‘不是真的抢银行。是和老师一起把最坏情况先演练掉。’"
+          "白子把你的判断节点做成了新应急手册。",
+          "最后一页写着：‘不是真的抢银行，是和老师一起把最坏情况先演练掉。’"
         ],
-        quote: "“先把风险练熟，真正出事时就不会慌。”"
-      },
-      stickerArchive: {
-        title: "结局：工具箱贴纸档案",
-        mood: "隐秘可爱",
-        route: "维修仓角落",
-        portrait: "sideCalm",
-        lines: [
-          "那张狼耳贴纸最终被贴在她工具箱右上角，位置精准得像战术标记。",
-          "白子后来又陆续收了几张，按日期贴成一条小小的时间线。",
-          "她从不主动展示，但每次开箱前都会先看一眼，然后再开始工作。"
-        ],
-        quote: "“嗯，这是老师参与过的证据链。”"
+        quote: "“把风险练熟，真正出事时就不会慌。”"
       },
       ramenSphere: {
         title: "结局：拉面临界值",
@@ -1056,12 +1502,143 @@
         route: "深夜拉面店",
         portrait: "chibi",
         lines: [
-          "你们真的挑战了加量，但严格执行“吃成球即停”阈值。",
-          "白子在你快放弃时把剩余部分分流到自己碗里，像处理高压任务那样冷静。",
-          "最终两人都只到“临界球形”，没有越线。她难得笑了一下：“嗯，这次控制得很好。”"
+          "你们挑战了加量，并严格执行“吃成球即停”阈值。",
+          "白子在临界点接手剩余部分，动作冷静得像处理突发任务。",
+          "最后两人都只到临界球形，没有越线。"
         ],
         quote: "“拉面可以冒险，但不许失控。”"
+      },
+      officeSnacks: {
+        title: "结局：办公室零食防线",
+        mood: "补给满格",
+        route: "战术补给点",
+        portrait: "chibi",
+        lines: [
+          "办公室被改造成补给站，抽屉按用途分层。",
+          "白子写了应急投喂条例：老师连续工作三小时，强制补给。",
+          "后来大家默认：老师办公室最安全，因为她会定时巡检，也定时来看你。"
+        ],
+        quote: "“先补给，再行动。”"
+      },
+      lanternPatrol: {
+        title: "结局：福字机动组",
+        mood: "节日执勤",
+        route: "阿拜多斯拜年线",
+        portrait: "sideKiller",
+        lines: [
+          "她真的把春联贴在车前梁，车尾挂上会响的福字牌。",
+          "第一次出勤，坏人误判成节庆车队，下一秒被精准制服。",
+          "你在后面负责“新年快乐”，她在前面负责“请配合调查”。"
+        ],
+        quote: "“节日感和执行力，可以并存。”"
+      },
+      b68Ceasefire: {
+        title: "结局：便利屋68停火协议",
+        mood: "高压收束",
+        route: "废仓库街",
+        portrait: "sideKiller",
+        lines: [
+          "那场交火在两轮信号后被强行降温，双方在掩体后完成识别码交换。",
+          "白子把停火流程写成模板，标注了“误判冲突的最短止损路径”。",
+          "便利屋68临走前留下了一句：“下次先报码，再开火。”"
+        ],
+        quote: "“先停火，再解释。活着的人才能解释清楚。”"
+      },
+      trinitySync: {
+        title: "结局：补课部协同线",
+        mood: "联动作业",
+        route: "崔尼蒂-阿拜多斯联合巡逻",
+        portrait: "sideCalm",
+        lines: [
+          "你和白子把补课部的巡逻图改写成双线协同方案，覆盖了夜间盲区。",
+          "后续几次联动中，误报率明显下降，执行效率稳定上升。",
+          "白子只在最后汇报里加了一行：‘老师位于中枢时，协同质量显著提高。’"
+        ],
+        quote: "“联动作业最怕断线。老师没有断线。”"
+      },
+      engineeringLight: {
+        title: "结局：照明先行",
+        mood: "技术稳态",
+        route: "千禧年支援线路",
+        portrait: "full",
+        lines: [
+          "你们把工程部无人机的照明策略固化成了标准流程，夜巡盲区被系统性压缩。",
+          "白子把每次照明轨迹回写到地图，形成可复用的夜间导航图层。",
+          "后续任务中，她的判断更快，你的指令也更容易落地。"
+        ],
+        quote: "“先看清，再行动。这个顺序很有效。”"
+      },
+      gameDevSync: {
+        title: "结局：模拟战满同步",
+        mood: "低压磨合",
+        route: "千禧年社团活动室",
+        portrait: "meme",
+        lines: [
+          "游戏开发部把你们的联机数据导出后，给了一个很直白的结论：默契度满格。",
+          "白子把那份报告折好放进口袋，表情没变，但收得很认真。",
+          "离开前她只说了一句：“模拟战通过。实战也会通过。”"
+        ],
+        quote: "“老师和我的同步，不只在游戏里成立。”"
       }
+    };
+
+    const achievements = {
+      firstRun: {
+        title: "成就：初次夜巡",
+        detail: "完成1次结局结算。"
+      },
+      trust10: {
+        title: "成就：信赖达到10",
+        detail: "单次流程中信赖值达到10。"
+      },
+      calm10: {
+        title: "成就：安定达到10",
+        detail: "单次流程中安定值达到10。"
+      },
+      play3: {
+        title: "成就：夜巡三回",
+        detail: "累计完成3次结局结算。"
+      },
+      play10: {
+        title: "成就：夜巡十回",
+        detail: "累计完成10次结局结算。"
+      },
+      endingParallel: {
+        title: "成就：并行登记",
+        detail: "达成结局「并行引擎」。"
+      },
+      endingFramedPainting: {
+        title: "成就：裱装留档",
+        detail: "达成结局「被精心裱装的画」。"
+      },
+      endingB68Ceasefire: {
+        title: "成就：停火信号",
+        detail: "达成结局「便利屋68停火协议」。"
+      },
+      endingGameDevSync: {
+        title: "成就：满同步记录",
+        detail: "达成结局「模拟战满同步」。"
+      },
+      endingCollector5: {
+        title: "成就：结局收藏家Ⅰ",
+        detail: "累计点亮5个不同结局。"
+      },
+      endingCollectorAll: {
+        title: "成就：结局收藏家Ⅱ",
+        detail: "点亮全部结局。"
+      },
+      play100: {
+        title: "成就：游玩了100次",
+        detail: "累计完成100次结局结算。"
+      }
+    };
+
+    const STORAGE_KEY = "shiroko_horror_archive_v1";
+    const MAX_AFFECTION_LEVEL = 50;
+    const THEME_REQUIREMENTS = {
+      default: 0,
+      light: 5,
+      pink: 10
     };
 
     const portraitMap = {
@@ -1069,9 +1646,11 @@
       chibi: "portraitChibi",
       sideCalm: "portraitSideCalm",
       sideKiller: "portraitSideKiller",
-      eyesClosed: "portraitEyesClosed"
+      eyesClosed: "portraitEyesClosed",
+      meme: "portraitMeme"
     };
 
+    const sceneMap = Object.fromEntries(scenes.map((scene) => [scene.id, scene]));
     const meterCaps = scenes.reduce(
       (caps, scene) => {
         caps.trust += Math.max(...scene.choices.map((choice) => choice.effects.trust));
@@ -1082,17 +1661,28 @@
     );
 
     const state = {
-      index: 0,
+      currentSceneId: "intro",
+      step: 0,
       trust: 0,
       calm: 0,
       selectedChoice: null,
-      specialPath: null,
+      unlocks: new Set(),
       typing: false,
       skipSegment: false,
       typeToken: 0,
       sceneLinesWrap: null,
       replyNode: null,
       finished: false
+    };
+
+    const progress = {
+      playCount: 0,
+      affectionPoints: 0,
+      maxTrust: 0,
+      maxCalm: 0,
+      selectedTheme: "default",
+      unlockedEndings: new Set(),
+      unlockedAchievements: new Set()
     };
 
     const sceneTag = document.getElementById("sceneTag");
@@ -1103,12 +1693,29 @@
     const choices = document.getElementById("choices");
     const nextButton = document.getElementById("nextButton");
     const hint = document.getElementById("hint");
+    const affectionLevel = document.getElementById("affectionLevel");
+    const affectionPoints = document.getElementById("affectionPoints");
+    const affectionBar = document.getElementById("affectionBar");
+    const affectionNote = document.getElementById("affectionNote");
     const trustBar = document.getElementById("trustBar");
     const calmBar = document.getElementById("calmBar");
     const trustValue = document.getElementById("trustValue");
     const calmValue = document.getElementById("calmValue");
     const moodLabel = document.getElementById("moodLabel");
     const routeLabel = document.getElementById("routeLabel");
+    const archiveToggle = document.getElementById("archiveToggle");
+    const archiveOverlay = document.getElementById("archiveOverlay");
+    const archivePanelClose = document.getElementById("archivePanelClose");
+    const playCountNode = document.getElementById("playCount");
+    const endingCollection = document.getElementById("endingCollection");
+    const achievementCollection = document.getElementById("achievementCollection");
+    const themeSwitcher = document.getElementById("themeSwitcher");
+    const achievementToast = document.getElementById("achievementToast");
+    const toastQueue = [];
+    let toastActive = false;
+    let toastTimer = null;
+    let recoilLoopToken = 0;
+    let recoilTimer = null;
 
     function setPortrait(mode) {
       const activeId = portraitMap[mode] || portraitMap.full;
@@ -1116,6 +1723,63 @@
         const node = document.getElementById(id);
         node.classList.toggle("active", id === activeId);
       });
+    }
+
+    function clearPortraitEffects() {
+      recoilLoopToken += 1;
+      clearTimeout(recoilTimer);
+      Object.values(portraitMap).forEach((id) => {
+        const node = document.getElementById(id);
+        node.classList.remove("effect-recoil-burst", "effect-happy");
+      });
+    }
+
+    function getActivePortraitNode() {
+      const activeId = Object.values(portraitMap).find((id) => {
+        const node = document.getElementById(id);
+        return node.classList.contains("active");
+      });
+      return activeId ? document.getElementById(activeId) : null;
+    }
+
+    function applyPortraitEffect(effectType) {
+      clearPortraitEffects();
+      if (!effectType) return;
+      const activePortrait = getActivePortraitNode();
+      if (!activePortrait) return;
+
+      if (effectType === "recoil") {
+        const currentToken = recoilLoopToken;
+        const runBurst = () => {
+          if (currentToken !== recoilLoopToken) return;
+          const burstDuration = Math.round(75 + Math.random() * 85);
+          const jitter1 = `${Math.round(-7 + Math.random() * 5)}px`;
+          const jitter2 = `${Math.round(4 + Math.random() * 7)}px`;
+          const jitter3 = `${Math.round(-5 + Math.random() * 4)}px`;
+          activePortrait.style.setProperty("--recoil-duration", `${burstDuration}ms`);
+          activePortrait.style.setProperty("--recoil-x1", jitter1);
+          activePortrait.style.setProperty("--recoil-x2", jitter2);
+          activePortrait.style.setProperty("--recoil-x3", jitter3);
+          activePortrait.classList.remove("effect-recoil-burst");
+          void activePortrait.offsetWidth;
+          activePortrait.classList.add("effect-recoil-burst");
+
+          const nextDelay = Math.round(120 + Math.random() * 420);
+          recoilTimer = setTimeout(runBurst, burstDuration + nextDelay);
+        };
+
+        recoilTimer = setTimeout(runBurst, Math.round(60 + Math.random() * 120));
+        return;
+      }
+
+      if (effectType === "happyDrop") {
+        activePortrait.classList.add("effect-happy");
+        const cleanup = () => {
+          activePortrait.classList.remove("effect-happy");
+          activePortrait.removeEventListener("animationend", cleanup);
+        };
+        activePortrait.addEventListener("animationend", cleanup);
+      }
     }
 
     function updateMeters() {
@@ -1127,57 +1791,277 @@
       calmValue.textContent = state.calm;
     }
 
+    function totalPointsForLevel(level) {
+      return 5 * level * level + 25 * level;
+    }
+
+    function levelUpCost(level) {
+      return 10 * level + 30;
+    }
+
+    function getAffectionCap() {
+      return totalPointsForLevel(MAX_AFFECTION_LEVEL);
+    }
+
+    function clampAffectionPoints(points) {
+      const normalized = Number.isFinite(points) ? Math.floor(points) : 0;
+      return Math.max(0, Math.min(getAffectionCap(), normalized));
+    }
+
+    function getAffectionStatus(points = progress.affectionPoints) {
+      const safePoints = clampAffectionPoints(points);
+      let level = 0;
+      let spent = 0;
+      while (level < MAX_AFFECTION_LEVEL) {
+        const need = levelUpCost(level);
+        if (safePoints - spent < need) break;
+        spent += need;
+        level += 1;
+      }
+
+      if (level >= MAX_AFFECTION_LEVEL) {
+        return {
+          level: MAX_AFFECTION_LEVEL,
+          current: 0,
+          need: 0,
+          progress: 100
+        };
+      }
+
+      const current = safePoints - spent;
+      const need = levelUpCost(level);
+      const progress = Math.max(0, Math.min(100, Math.round((current / need) * 100)));
+      return { level, current, need, progress };
+    }
+
+    function isThemeUnlocked(themeKey, level = getAffectionStatus().level) {
+      const requiredLevel = THEME_REQUIREMENTS[themeKey] ?? 0;
+      return level >= requiredLevel;
+    }
+
+    function applyTheme(themeKey) {
+      const safeTheme = THEME_REQUIREMENTS[themeKey] !== undefined ? themeKey : "default";
+      const status = getAffectionStatus();
+      const finalTheme = isThemeUnlocked(safeTheme, status.level) ? safeTheme : "default";
+      progress.selectedTheme = finalTheme;
+      document.body.setAttribute("data-theme", finalTheme);
+    }
+
+    function refreshAffectionUI() {
+      const status = getAffectionStatus();
+      affectionLevel.textContent = `好感 Lv.${status.level}`;
+      if (status.level >= MAX_AFFECTION_LEVEL) {
+        affectionPoints.textContent = "MAX";
+        affectionBar.style.width = "100%";
+        affectionNote.textContent = "好感已满级（Lv.50）。";
+        return;
+      }
+
+      affectionPoints.textContent = `${status.current} / ${status.need}`;
+      affectionBar.style.width = `${status.progress}%`;
+      affectionNote.textContent = `Lv.5解锁亮色主题，Lv.10解锁粉色主题。当前总好感：${progress.affectionPoints}`;
+    }
+
+    function addAffectionPoints(amount) {
+      if (!amount) return;
+      progress.affectionPoints = clampAffectionPoints(progress.affectionPoints + amount);
+      refreshAffectionUI();
+    }
+
+    function loadProgress() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (!raw) return;
+        const saved = JSON.parse(raw);
+        progress.playCount = Number(saved.playCount) || 0;
+        progress.affectionPoints = clampAffectionPoints(Number(saved.affectionPoints) || 0);
+        progress.maxTrust = Number(saved.maxTrust) || 0;
+        progress.maxCalm = Number(saved.maxCalm) || 0;
+        progress.selectedTheme = typeof saved.selectedTheme === "string" ? saved.selectedTheme : "default";
+        progress.unlockedEndings = new Set(Array.isArray(saved.unlockedEndings) ? saved.unlockedEndings : []);
+        progress.unlockedAchievements = new Set(Array.isArray(saved.unlockedAchievements) ? saved.unlockedAchievements : []);
+      } catch (_error) {
+        progress.playCount = 0;
+        progress.affectionPoints = 0;
+        progress.maxTrust = 0;
+        progress.maxCalm = 0;
+        progress.selectedTheme = "default";
+        progress.unlockedEndings = new Set();
+        progress.unlockedAchievements = new Set();
+      }
+    }
+
+    function saveProgress() {
+      const payload = {
+        playCount: progress.playCount,
+        affectionPoints: progress.affectionPoints,
+        maxTrust: progress.maxTrust,
+        maxCalm: progress.maxCalm,
+        selectedTheme: progress.selectedTheme,
+        unlockedEndings: [...progress.unlockedEndings],
+        unlockedAchievements: [...progress.unlockedAchievements]
+      };
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(payload));
+    }
+
+    function updateProgressStats() {
+      progress.maxTrust = Math.max(progress.maxTrust, state.trust);
+      progress.maxCalm = Math.max(progress.maxCalm, state.calm);
+    }
+
+    function unlockAchievement(achievementId, newlyUnlocked) {
+      if (!achievements[achievementId]) return;
+      if (progress.unlockedAchievements.has(achievementId)) return;
+      progress.unlockedAchievements.add(achievementId);
+      newlyUnlocked.push(achievementId);
+    }
+
+    function evaluateAchievements() {
+      const newlyUnlocked = [];
+      const totalEndings = Object.keys(endings).length;
+      if (progress.playCount >= 1) unlockAchievement("firstRun", newlyUnlocked);
+      if (progress.maxTrust >= 10) unlockAchievement("trust10", newlyUnlocked);
+      if (progress.maxCalm >= 10) unlockAchievement("calm10", newlyUnlocked);
+      if (progress.playCount >= 3) unlockAchievement("play3", newlyUnlocked);
+      if (progress.playCount >= 10) unlockAchievement("play10", newlyUnlocked);
+      if (progress.unlockedEndings.has("parallel")) unlockAchievement("endingParallel", newlyUnlocked);
+      if (progress.unlockedEndings.has("framedPainting")) unlockAchievement("endingFramedPainting", newlyUnlocked);
+      if (progress.unlockedEndings.has("b68Ceasefire")) unlockAchievement("endingB68Ceasefire", newlyUnlocked);
+      if (progress.unlockedEndings.has("gameDevSync")) unlockAchievement("endingGameDevSync", newlyUnlocked);
+      if (progress.unlockedEndings.size >= 5) unlockAchievement("endingCollector5", newlyUnlocked);
+      if (progress.unlockedEndings.size >= totalEndings) unlockAchievement("endingCollectorAll", newlyUnlocked);
+      if (progress.playCount >= 100) unlockAchievement("play100", newlyUnlocked);
+      return newlyUnlocked;
+    }
+
+    function showAchievementToast(message) {
+      if (!achievementToast) return;
+      achievementToast.textContent = message;
+      achievementToast.classList.add("visible");
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => {
+        achievementToast.classList.remove("visible");
+        setTimeout(() => {
+          toastActive = false;
+          showNextAchievementToast();
+        }, 180);
+      }, 3000);
+    }
+
+    function showNextAchievementToast() {
+      if (toastActive) return;
+      const nextId = toastQueue.shift();
+      if (!nextId) return;
+      toastActive = true;
+      const achievement = achievements[nextId];
+      if (!achievement) {
+        toastActive = false;
+        showNextAchievementToast();
+        return;
+      }
+      const achievementName = achievement.title.replace("成就：", "");
+      showAchievementToast(`你打成了「${achievementName}」成就`);
+    }
+
+    function enqueueAchievementToasts(newlyUnlocked) {
+      if (!Array.isArray(newlyUnlocked) || newlyUnlocked.length === 0) return;
+      newlyUnlocked.forEach((achievementId) => {
+        toastQueue.push(achievementId);
+      });
+      showNextAchievementToast();
+    }
+
+    function syncProgress(newlyUnlocked = [], shouldToast = true) {
+      applyTheme(progress.selectedTheme);
+      refreshAffectionUI();
+      saveProgress();
+      renderArchivePanel();
+      if (shouldToast) enqueueAchievementToasts(newlyUnlocked);
+    }
+
+    function renderThemeSwitcher() {
+      const status = getAffectionStatus();
+      const themes = [
+        { key: "default", title: "夜巡主题", detail: "默认深色背景（已解锁）" },
+        { key: "light", title: "亮色主题", detail: "白子配色亮色背景（Lv.5解锁）" },
+        { key: "pink", title: "粉色主题", detail: "粉色背景主题（Lv.10解锁）" }
+      ];
+
+      themeSwitcher.innerHTML = themes
+        .map((theme) => {
+          const unlocked = isThemeUnlocked(theme.key, status.level);
+          const isActive = progress.selectedTheme === theme.key;
+          return `
+            <button type="button" class="theme-option ${isActive ? "active" : ""}" data-theme="${theme.key}" ${unlocked ? "" : "disabled"}>
+              <strong>${theme.title}</strong>
+              <span>${theme.detail}</span>
+            </button>
+          `;
+        })
+        .join("");
+    }
+
+    function renderArchivePanel() {
+      playCountNode.textContent = String(progress.playCount);
+      endingCollection.innerHTML = Object.entries(endings)
+        .map(([endingId, ending]) => {
+          const unlocked = progress.unlockedEndings.has(endingId);
+          return `
+            <article class="collect-card ${unlocked ? "unlocked" : "locked"}">
+              <h5>${ending.title}</h5>
+              <p>路线：${ending.route}</p>
+              <p class="state">${unlocked ? "已达成" : "未达成"}</p>
+            </article>
+          `;
+        })
+        .join("");
+
+      achievementCollection.innerHTML = Object.entries(achievements)
+        .map(([achievementId, achievement]) => {
+          const unlocked = progress.unlockedAchievements.has(achievementId);
+          return `
+            <article class="collect-card ${unlocked ? "unlocked" : "locked"}">
+              <h5>${achievement.title}</h5>
+              <p>${achievement.detail}</p>
+              <p class="state">${unlocked ? "已解锁" : "未解锁"}</p>
+            </article>
+          `;
+        })
+        .join("");
+
+      renderThemeSwitcher();
+    }
+
+    function openArchivePanel() {
+      renderArchivePanel();
+      archiveOverlay.hidden = false;
+      document.body.classList.add("modal-open");
+    }
+
+    function closeArchivePanel() {
+      archiveOverlay.hidden = true;
+      document.body.classList.remove("modal-open");
+    }
+
     function sleep(ms) {
       return new Promise((resolve) => setTimeout(resolve, ms));
     }
 
     function charDelay(char) {
-      if ("，。！？；：".includes(char)) return 62;
-      if (char === " ") return 12;
-      return 26;
+      if ("，。！？；：".includes(char)) return 70;
+      if (char === " ") return 15;
+      return 30;
     }
 
     function scrollToBottom() {
       dialogueLog.scrollTop = dialogueLog.scrollHeight;
     }
 
-    const keywordStyles = [
-      { word: "阿拜多斯", className: "kw-core" },
-      { word: "老师", className: "kw-core" },
-      { word: "行动", className: "kw-warm" },
-      { word: "健身房", className: "kw-warm" },
-      { word: "抢银行", className: "kw-alert" },
-      { word: "拉面", className: "kw-warm" }
-    ];
-
-    function escapeHtml(text) {
-      return text
-        .replaceAll("&", "&amp;")
-        .replaceAll("<", "&lt;")
-        .replaceAll(">", "&gt;");
-    }
-
-    function escapeRegExp(text) {
-      return text.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-    }
-
-    function highlightKeywords(node) {
-      const base = node.textContent;
-      let html = escapeHtml(base);
-      keywordStyles.forEach((item) => {
-        const regex = new RegExp(escapeRegExp(item.word), "g");
-        html = html.replace(regex, `<span class="${item.className}">${item.word}</span>`);
-      });
-      node.innerHTML = html;
-    }
-
     async function typeText(target, text, token) {
       if (state.skipSegment) {
         target.textContent = text;
-        highlightKeywords(target);
         return;
       }
-
       for (let i = 0; i < text.length; i += 1) {
         if (token !== state.typeToken) return;
         if (state.skipSegment) {
@@ -1188,7 +2072,6 @@
         scrollToBottom();
         await sleep(charDelay(text[i]));
       }
-      highlightKeywords(target);
       scrollToBottom();
     }
 
@@ -1207,11 +2090,24 @@
       dialogueLog.appendChild(block);
       state.sceneLinesWrap = linesWrap;
       state.replyNode = null;
-      scrollToBottom();
     }
 
-    async function renderScene() {
-      const scene = scenes[state.index];
+    function renderChoices(scene) {
+      choices.innerHTML = "";
+      scene.choices.forEach((choice, index) => {
+        const button = document.createElement("button");
+        button.type = "button";
+        button.className = "choice";
+        button.innerHTML = `<strong>${choice.label}</strong><span>${choice.detail}</span>`;
+        button.addEventListener("click", () => selectChoice(index));
+        choices.appendChild(button);
+      });
+      hint.innerHTML = "可反复切换选项，点击继续时才会锁定并进入下一幕。";
+    }
+
+    async function renderScene(sceneId) {
+      const scene = sceneMap[sceneId];
+      state.currentSceneId = sceneId;
       state.selectedChoice = null;
       state.finished = false;
       state.skipSegment = false;
@@ -1220,12 +2116,13 @@
       const token = state.typeToken;
 
       sceneTag.textContent = scene.tag;
-      sceneCount.textContent = `${state.index + 1} / ${scenes.length}`;
+      sceneCount.textContent = `第 ${state.step + 1} 幕`;
       speaker.textContent = scene.speaker;
       sceneTitle.textContent = scene.title;
       moodLabel.textContent = `状态：${scene.mood}`;
       routeLabel.textContent = `路线：${scene.route}`;
       setPortrait(scene.portrait);
+      applyPortraitEffect(scene.portraitEffect);
 
       choices.innerHTML = "";
       nextButton.disabled = true;
@@ -1233,7 +2130,6 @@
       hint.innerHTML = '打字机播放中可按 <kbd>空格</kbd> 显示当前段落全文。';
 
       createSceneBlock(scene);
-
       for (const lineText of scene.lines) {
         if (token !== state.typeToken) return;
         const p = document.createElement("p");
@@ -1248,30 +2144,14 @@
       renderChoices(scene);
     }
 
-    function renderChoices(scene) {
-      choices.innerHTML = "";
-      scene.choices.forEach((choice, index) => {
-        const button = document.createElement("button");
-        button.type = "button";
-        button.className = "choice";
-        button.innerHTML = `<strong>${choice.label}</strong><span>${choice.detail}</span>`;
-        button.addEventListener("click", () => selectChoice(index));
-        choices.appendChild(button);
-      });
-      hint.innerHTML = '可反复切换选项，点击“继续”时才会锁定并结算。';
-    }
-
     async function previewReply(replyText) {
       if (!state.sceneLinesWrap) return;
-
       if (!state.replyNode) {
         state.replyNode = document.createElement("p");
         state.replyNode.className = "line reply";
         state.sceneLinesWrap.appendChild(state.replyNode);
       }
       state.replyNode.textContent = "";
-      scrollToBottom();
-
       state.skipSegment = false;
       state.typing = true;
       ++state.typeToken;
@@ -1280,7 +2160,6 @@
       if (token !== state.typeToken) return;
       state.typing = false;
       state.skipSegment = false;
-      scrollToBottom();
     }
 
     async function selectChoice(choiceIndex) {
@@ -1291,7 +2170,7 @@
         state.typing = false;
         state.skipSegment = false;
       }
-      const scene = scenes[state.index];
+      const scene = sceneMap[state.currentSceneId];
       const choice = scene.choices[choiceIndex];
       state.selectedChoice = choiceIndex;
 
@@ -1300,31 +2179,41 @@
       });
 
       nextButton.disabled = true;
-      hint.innerHTML = `预览回应：信赖 +${choice.effects.trust} / 安定 +${choice.effects.calm}（点继续后生效）`;
+      hint.innerHTML = `预览回应：信赖 +${choice.effects.trust} / 安定 +${choice.effects.calm}（继续后生效）`;
       await previewReply(choice.reply);
       nextButton.disabled = false;
-      nextButton.innerHTML = "<strong>继续</strong><span>锁定当前选项</span>";
+      nextButton.innerHTML = "<strong>继续</strong><span>锁定当前选项并推进</span>";
     }
 
-    function resolveEnding() {
-      if (state.specialPath && specialEndings[state.specialPath]) {
-        return specialEndings[state.specialPath];
-      }
-
-      const trustThreshold = Math.ceil(meterCaps.trust * 0.62);
-      const calmThreshold = Math.ceil(meterCaps.calm * 0.62);
-
-      if (state.trust >= trustThreshold && state.trust >= state.calm + 2) {
-        return normalEndings.highTrust;
-      }
-      if (state.calm >= calmThreshold && state.calm >= state.trust) {
-        return normalEndings.highCalm;
-      }
-      return normalEndings.balanced;
+    function registerEndingAndAchievements(endingId) {
+      progress.unlockedEndings.add(endingId);
+      progress.playCount += 1;
+      addAffectionPoints(5);
+      updateProgressStats();
+      const newlyUnlocked = evaluateAchievements();
+      syncProgress(newlyUnlocked, true);
     }
 
-    function renderEnding() {
-      const ending = resolveEnding();
+    function resolveEnding(finalChoice) {
+      if (state.unlocks.has("framedPainting")) return "framedPainting";
+      if (state.unlocks.has("b68Ceasefire")) return "b68Ceasefire";
+      if (state.unlocks.has("gameDevSync")) return "gameDevSync";
+      if (state.unlocks.has("trinitySync")) return "trinitySync";
+      if (state.unlocks.has("engineeringLight")) return "engineeringLight";
+      if (state.unlocks.has("bankRehearsal") && finalChoice.endingHint === "parallel") return "bankRehearsal";
+      if (state.unlocks.has("ramenSphere")) return "ramenSphere";
+      if (state.unlocks.has("officeSnacks") && finalChoice.endingHint === "guard") return "officeSnacks";
+      if (state.unlocks.has("lanternPatrol") && finalChoice.endingHint === "beacon") return "lanternPatrol";
+
+      if (finalChoice.endingHint === "parallel") return "parallel";
+      if (finalChoice.endingHint === "guard") return "guard";
+      return "beacon";
+    }
+
+    function renderEnding(endingId) {
+      const ending = endings[endingId];
+      if (!ending) return;
+      registerEndingAndAchievements(endingId);
       state.finished = true;
       state.typing = false;
       state.skipSegment = false;
@@ -1337,6 +2226,7 @@
       moodLabel.textContent = `状态：${ending.mood}`;
       routeLabel.textContent = `路线：${ending.route}`;
       setPortrait(ending.portrait);
+      applyPortraitEffect(ending.portraitEffect);
 
       dialogueLog.innerHTML = `
         <article class="scene-block">
@@ -1346,48 +2236,50 @@
             ${ending.lines.map((line) => `<p>${line}</p>`).join("")}
             <p class="quote">${ending.quote}</p>
             <div class="credit">
-              使用了当前文件夹内全部立绘资源，并加入了老师办公室、便利店、节日段落、
-              打字机空格跳过、选项可改选直到继续锁定、以及多个特定选项结局。
+              分支剧情与分支结局已启用：不同选项会进入不同场景路线，并在终幕根据路径触发不同结局。
             </div>
           </div>
         </article>
       `;
-      scrollToBottom();
 
       choices.innerHTML = "";
-      hint.innerHTML = "结局达成。点击右侧按钮可重开。";
+      hint.innerHTML = "结局达成。右上角可查看结局与成就，点击右侧按钮可重开。";
       nextButton.disabled = false;
-      nextButton.innerHTML = "<strong>重新开始</strong><span>回到第一幕</span>";
+      nextButton.innerHTML = "<strong>重新开始</strong><span>从序章开始</span>";
     }
 
     async function applyChoiceAndAdvance() {
-      if (state.finished || state.typing) return;
-      if (state.selectedChoice === null) return;
+      if (state.finished || state.typing || state.selectedChoice === null) return;
 
-      const scene = scenes[state.index];
+      const scene = sceneMap[state.currentSceneId];
       const choice = scene.choices[state.selectedChoice];
       state.trust += choice.effects.trust;
       state.calm += choice.effects.calm;
+      addAffectionPoints(choice.effects.trust + choice.effects.calm);
       updateMeters();
+      updateProgressStats();
+      const newlyUnlocked = evaluateAchievements();
+      syncProgress(newlyUnlocked, true);
 
-      if (choice.unlock) {
-        state.specialPath = choice.unlock;
-      }
+      if (choice.unlock) state.unlocks.add(choice.unlock);
 
-      state.index += 1;
-      if (state.index >= scenes.length) {
-        renderEnding();
+      if (scene.isFinal) {
+        const endingId = resolveEnding(choice);
+        renderEnding(endingId);
         return;
       }
-      await renderScene();
+
+      state.step += 1;
+      await renderScene(choice.next);
     }
 
     function resetGame() {
-      state.index = 0;
+      state.currentSceneId = "intro";
+      state.step = 0;
       state.trust = 0;
       state.calm = 0;
       state.selectedChoice = null;
-      state.specialPath = null;
+      state.unlocks = new Set();
       state.typing = false;
       state.skipSegment = false;
       state.finished = false;
@@ -1395,7 +2287,7 @@
       state.sceneLinesWrap = null;
       ++state.typeToken;
       updateMeters();
-      renderScene();
+      renderScene("intro");
     }
 
     nextButton.addEventListener("click", async () => {
@@ -1406,8 +2298,34 @@
       await applyChoiceAndAdvance();
     });
 
+    archiveToggle.addEventListener("click", () => {
+      openArchivePanel();
+    });
+
+    archivePanelClose.addEventListener("click", () => {
+      closeArchivePanel();
+    });
+
+    archiveOverlay.addEventListener("click", (event) => {
+      if (event.target === archiveOverlay) closeArchivePanel();
+    });
+
+    themeSwitcher.addEventListener("click", (event) => {
+      const trigger = event.target.closest(".theme-option");
+      if (!trigger || trigger.disabled) return;
+      const targetTheme = trigger.dataset.theme || "default";
+      if (!isThemeUnlocked(targetTheme)) return;
+      progress.selectedTheme = targetTheme;
+      syncProgress([], false);
+    });
+
     document.addEventListener("keydown", (event) => {
+      if (event.code === "Escape" && !archiveOverlay.hidden) {
+        closeArchivePanel();
+        return;
+      }
       if (event.code !== "Space") return;
+      if (!archiveOverlay.hidden) return;
       const activeTag = document.activeElement ? document.activeElement.tagName : "";
       if (activeTag === "INPUT" || activeTag === "TEXTAREA") return;
       if (state.typing) {
@@ -1416,8 +2334,11 @@
       }
     });
 
+    loadProgress();
+    evaluateAchievements();
+    syncProgress([], false);
     updateMeters();
-    renderScene();
+    renderScene("intro");
   </script>
 </body>
 </html>
